@@ -15,6 +15,7 @@ public class Luck {
     private static final String SEPARATOR = "____________________________________________________________";
     private static final int MAX_TASKS = 100;
     private static final String[] TASKS = new String[MAX_TASKS];
+    private static final boolean[] DONE = new boolean[MAX_TASKS];
     private static int taskCount = 0;
 
     public static String getBanner() {
@@ -42,6 +43,11 @@ public class Luck {
                 continue;
             }
 
+            if (input.toLowerCase().startsWith("mark ")) {
+                markTask(input.substring(5));
+                continue;
+            }
+
             addTask(input);
             System.out.println("     added: " + input);
         }
@@ -52,7 +58,24 @@ public class Luck {
     private static void addTask(String task) {
         if (taskCount < MAX_TASKS) {
             TASKS[taskCount] = task;
+            DONE[taskCount] = false;
             taskCount++;
+        }
+    }
+
+    private static void markTask(String indexText) {
+        try {
+            int index = Integer.parseInt(indexText) - 1;
+            if (index < 0 || index >= taskCount) {
+                System.out.println("     Invalid task number.");
+                return;
+            }
+
+            DONE[index] = true;
+            System.out.println("     Nice! I've marked this task as done:");
+            System.out.println("       [X] " + TASKS[index]);
+        } catch (NumberFormatException e) {
+            System.out.println("     Please enter a valid task number.");
         }
     }
 
@@ -62,8 +85,10 @@ public class Luck {
             return;
         }
 
+        System.out.println("     Here are the tasks in your list:");
         for (int i = 0; i < taskCount; i++) {
-            System.out.println("     " + (i + 1) + ". " + TASKS[i]);
+            String status = DONE[i] ? "[X]" : "[ ]";
+            System.out.println("     " + (i + 1) + "." + status + " " + TASKS[i]);
         }
     }
 
