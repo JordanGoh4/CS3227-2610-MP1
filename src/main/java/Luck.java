@@ -31,78 +31,113 @@ public class Luck {
             input = scanner.nextLine();
             System.out.println(SEPARATOR);
 
-            if (input.equalsIgnoreCase("bye")) {
-                System.out.println("     Bye. Hope to see you again soon!");
-                System.out.println(SEPARATOR);
-                break;
-            }
+            try {
+                if (input == null || input.trim().isEmpty()) {
+                    throw new LuckException("This can't be empty, do better.");
+                }
 
-            if (input.equalsIgnoreCase("list")) {
-                printTasks();
-                continue;
-            }
+                if (input.equalsIgnoreCase("bye")) {
+                    System.out.println("     Bye. Hope to see you again soon!");
+                    System.out.println(SEPARATOR);
+                    break;
+                }
 
-            if (input.toLowerCase().startsWith("mark ")) {
-                markTask(input.substring(5));
-                continue;
-            }
+                if (input.equalsIgnoreCase("list")) {
+                    printTasks();
+                    continue;
+                }
 
-            if (input.toLowerCase().startsWith("unmark ")) {
-                unmarkTask(input.substring(7));
-                continue;
-            }
+                if (input.toLowerCase().startsWith("mark ")) {
+                    markTask(input.substring(5));
+                    continue;
+                }
 
-            if (input.toLowerCase().startsWith("todo ")) {
-                addTodoTask(input.substring(5));
-                continue;
-            }
+                if (input.toLowerCase().startsWith("unmark ")) {
+                    unmarkTask(input.substring(7));
+                    continue;
+                }
 
-            if (input.toLowerCase().startsWith("deadline ")) {
-                addDeadlineTask(input.substring(9));
-                continue;
-            }
+                if (input.toLowerCase().startsWith("todo ")) {
+                    addTodoTask(input.substring(5));
+                    continue;
+                }
 
-            if (input.toLowerCase().startsWith("event ")) {
-                addEventTask(input.substring(6));
-                continue;
-            }
+                if (input.toLowerCase().startsWith("deadline ")) {
+                    addDeadlineTask(input.substring(9));
+                    continue;
+                }
 
-            System.out.println("     Invalid command.");
+                if (input.toLowerCase().startsWith("event ")) {
+                    addEventTask(input.substring(6));
+                    continue;
+                }
+
+                throw new LuckException("No luck there, I have no idea what this mean LOL.");
+            } catch (LuckException e) {
+                System.out.println("     OOPS!!! " + e.getMessage());
+            }
         }
 
         scanner.close();
     }
 
-
-    private static void addTodoTask(String taskDescription) {
-        if (taskCount < MAX_TASKS) {
-            TASKS[taskCount] = new Todo(taskDescription);
-            taskCount++;
-            System.out.println("     Got it. I've added this task:");
-            System.out.println("       " + TASKS[taskCount - 1]);
-            System.out.println("     Now you have " + taskCount + " tasks in the list.");
+    private static void addTodoTask(String taskDescription) throws LuckException {
+        if (taskDescription == null || taskDescription.trim().isEmpty()) {
+            throw new LuckException("This can't be empty, do better.");
         }
+
+        if (taskCount >= MAX_TASKS) {
+            throw new LuckException("Your task list is full.");
+        }
+
+        TASKS[taskCount] = new Todo(taskDescription.trim());
+        taskCount++;
+        System.out.println("     Got it. I've added this task:");
+        System.out.println("       " + TASKS[taskCount - 1]);
+        System.out.println("     Now you have " + taskCount + " tasks in the list.");
     }
 
-    private static void addDeadlineTask(String rawInput) {
+    private static void addDeadlineTask(String rawInput) throws LuckException {
+        if (rawInput == null || rawInput.trim().isEmpty()) {
+            throw new LuckException("This can't be empty, do better.");
+        }
+
         String[] parts = rawInput.split(" /by ", 2);
         String description = parts[0].trim();
         String by = parts.length > 1 ? parts[1].trim() : "";
 
-        if (taskCount < MAX_TASKS) {
-            TASKS[taskCount] = new Deadline(description, by);
-            taskCount++;
-            System.out.println("     Got it. I've added this task:");
-            System.out.println("       " + TASKS[taskCount - 1]);
-            System.out.println("     Now you have " + taskCount + " tasks in the list.");
+        if (description.isEmpty()) {
+            throw new LuckException("This can't be empty, do better.");
         }
+
+        if (by.isEmpty()) {
+            throw new LuckException("This ain't valid my friend.");
+        }
+
+        if (taskCount >= MAX_TASKS) {
+            throw new LuckException("Your task list is full.");
+        }
+
+        TASKS[taskCount] = new Deadline(description, by);
+        taskCount++;
+        System.out.println("     Got it. I've added this task:");
+        System.out.println("       " + TASKS[taskCount - 1]);
+        System.out.println("     Now you have " + taskCount + " tasks in the list.");
     }
 
-    private static void addEventTask(String rawInput) {
+    private static void addEventTask(String rawInput) throws LuckException {
+        if (rawInput == null || rawInput.trim().isEmpty()) {
+            throw new LuckException("This can't be empty, do better.");
+        }
+
         String[] firstSplit = rawInput.split(" /from ", 2);
         String description = firstSplit[0].trim();
         String from = "";
         String to = "";
+
+        if (description.isEmpty()) {
+            throw new LuckException("This can't be empty, do better.");
+        }
 
         if (firstSplit.length > 1) {
             String[] secondSplit = firstSplit[1].split(" /to ", 2);
@@ -110,44 +145,48 @@ public class Luck {
             to = secondSplit.length > 1 ? secondSplit[1].trim() : "";
         }
 
-        if (taskCount < MAX_TASKS) {
-            TASKS[taskCount] = new Event(description, from, to);
-            taskCount++;
-            System.out.println("     Got it. I've added this task:");
-            System.out.println("       " + TASKS[taskCount - 1]);
-            System.out.println("     Now you have " + taskCount + " tasks in the list.");
+        if (from.isEmpty() || to.isEmpty()) {
+            throw new LuckException("This ain't valid my friend.");
         }
+
+        if (taskCount >= MAX_TASKS) {
+            throw new LuckException("Your task list is full.");
+        }
+
+        TASKS[taskCount] = new Event(description, from, to);
+        taskCount++;
+        System.out.println("     Got it. I've added this task:");
+        System.out.println("       " + TASKS[taskCount - 1]);
+        System.out.println("     Now you have " + taskCount + " tasks in the list.");
     }
 
-    private static void markTask(String indexText) {
+    private static void markTask(String indexText) throws LuckException {
         try {
             int index = Integer.parseInt(indexText) - 1;
             if (index < 0 || index >= taskCount) {
-                System.out.println("     Invalid task number.");
-                return;
+                throw new LuckException("This ain't valid my friend.");
             }
 
             TASKS[index].markAsDone();
             System.out.println("     Nice! I've marked this task as done:");
             System.out.println("       " + TASKS[index]);
         } catch (NumberFormatException e) {
-            System.out.println("     Please enter a valid task number.");
+            throw new LuckException("This ain't valid my friend.");
         }
     }
 
-    private static void unmarkTask(String indexText) {
+    private static void unmarkTask(String indexText) throws LuckException {
         try {
             int index = Integer.parseInt(indexText) - 1;
             if (index < 0 || index >= taskCount) {
-                System.out.println("     Invalid task number.");
-                return;
+                throw new LuckException("This ain't valid my friend.");
             }
 
             TASKS[index].markAsNotDone();
             System.out.println("     OK, I've marked this task as not done yet:");
             System.out.println("       " + TASKS[index]);
         } catch (NumberFormatException e) {
-            System.out.println("     Please enter a valid task number.");
+            throw new LuckException("This ain't valid my friend.");
         }
     }
 
