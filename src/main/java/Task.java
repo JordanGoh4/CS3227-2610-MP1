@@ -1,20 +1,20 @@
 public class Task {
     protected String description;
     protected boolean isDone;
-    protected String type;
+    protected TaskType type;
     protected String by;
     protected String from;
     protected String to;
 
     public Task(String description) {
-        this(description, "T");
+        this(description, TaskType.TODO);
     }
 
-    public Task(String description, String type) {
+    public Task(String description, TaskType type) {
         this(description, type, null, null, null);
     }
 
-    public Task(String description, String type, String by, String from, String to) {
+    public Task(String description, TaskType type, String by, String from, String to) {
         this.description = description;
         this.isDone = false;
         this.type = type;
@@ -40,16 +40,16 @@ public class Task {
     }
 
     public String getTypeIcon() {
-        return type;
+        return type.getSymbol();
     }
 
     @Override
     public String toString() {
-        if ("D".equals(type) && by != null) {
+        if (TaskType.DEADLINE.equals(type) && by != null) {
             return "[" + getTypeIcon() + "][" + getStatusIcon() + "] " + description + " (by: " + by + ")";
         }
 
-        if ("E".equals(type) && from != null && to != null) {
+        if (TaskType.EVENT.equals(type) && from != null && to != null) {
             return "[" + getTypeIcon() + "][" + getStatusIcon() + "] " + description
                     + " (from: " + from + " to: " + to + ")";
         }
