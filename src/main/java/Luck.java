@@ -48,6 +48,11 @@ public class Luck {
                 continue;
             }
 
+            if (input.toLowerCase().startsWith("unmark ")) {
+                unmarkTask(input.substring(7));
+                continue;
+            }
+
             addTask(input);
             System.out.println("     added: " + input);
         }
@@ -74,6 +79,22 @@ public class Luck {
             DONE[index] = true;
             System.out.println("     Nice! I've marked this task as done:");
             System.out.println("       [X] " + TASKS[index]);
+        } catch (NumberFormatException e) {
+            System.out.println("     Please enter a valid task number.");
+        }
+    }
+
+    private static void unmarkTask(String indexText) {
+        try {
+            int index = Integer.parseInt(indexText) - 1;
+            if (index < 0 || index >= taskCount) {
+                System.out.println("     Invalid task number.");
+                return;
+            }
+
+            DONE[index] = false;
+            System.out.println("     OK, I've marked this task as not done yet:");
+            System.out.println("       [ ] " + TASKS[index]);
         } catch (NumberFormatException e) {
             System.out.println("     Please enter a valid task number.");
         }
