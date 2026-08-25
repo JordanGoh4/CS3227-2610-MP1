@@ -1,8 +1,8 @@
+import java.util.Scanner;
+
 public class Luck {
     /**
-     * ASCII banner printed by the application.
-     *
-     * @return banner string
+     * ASCII banner used as the chatbot banner.
      */
     private static final String BANNER =
             " _                _        \n"
@@ -11,27 +11,40 @@ public class Luck {
                     + "| |___| |_| | (__|   <     \n"
                     + "|_____|\\__,_|\\___|_|\\_\\    \n";
 
+    private static final String BOT_NAME = "Luck";
+    private static final String SEPARATOR = "____________________________________________________________";
+
     public static String getBanner() {
         return BANNER;
     }
 
     public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(() -> createAndShowGui());
+        printGreeting();
+
+        Scanner scanner = new Scanner(System.in);
+        String input;
+
+        while (true) {
+            input = scanner.nextLine();
+            System.out.println(SEPARATOR);
+            System.out.println("     " + input);
+            System.out.println(SEPARATOR);
+
+            if (input.equalsIgnoreCase("bye")) {
+                System.out.println("     Bye. Hope to see you again soon!");
+                System.out.println(SEPARATOR);
+                break;
+            }
+        }
+
+        scanner.close();
     }
 
-    private static void createAndShowGui() {
-        javax.swing.JFrame frame = new javax.swing.JFrame("Luck");
-        javax.swing.JTextArea area = new javax.swing.JTextArea(getBanner());
-        area.setEditable(false);
-        area.setFont(new java.awt.Font(java.awt.Font.MONOSPACED, java.awt.Font.PLAIN, 14));
-        area.setBackground(java.awt.Color.BLACK);
-        area.setForeground(java.awt.Color.GREEN);
-        area.setBorder(javax.swing.BorderFactory.createEmptyBorder(10,10,10,10));
-
-        frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        frame.getContentPane().add(new javax.swing.JScrollPane(area));
-        frame.setSize(420, 220);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+    private static void printGreeting() {
+        System.out.println(SEPARATOR);
+        System.out.print(getBanner());
+        System.out.println("Hello! I'm " + BOT_NAME + ".");
+        System.out.println("What can I do for you?");
+        System.out.println(SEPARATOR);
     }
 }
