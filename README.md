@@ -1,3 +1,34 @@
+# CS3227 Holiday Planner (scaffold)
+
+Minimal instructions to build and run the project.
+
+Prerequisites
+- Java JDK 17 installed and on your PATH.
+
+Build with Gradle wrapper (recommended):
+
+Windows PowerShell:
+```powershell
+.\gradlew build
+.\gradlew test
+```
+
+Unix/macOS:
+```bash
+./gradlew build
+./gradlew test
+```
+
+Notes:
+- The Gradle build config includes JavaFX settings. The application `mainClass` is not set yet — the UI/Launcher will be added later.
+- You can compile and run single Java files directly using `javac` / `java` for quick checks. Example (from project root):
+
+```bash
+javac -d out src/main/java/Luck.java
+java -cp out Luck
+```
+
+If you want me to add a Gradle `application.mainClass` and a runnable JavaFX launcher now, tell me and I'll scaffold it.
 # Luck project template
 
 This is a project template for a greenfield Java project. Given below are instructions on how to use it.
