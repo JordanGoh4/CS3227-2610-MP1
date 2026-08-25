@@ -13,6 +13,9 @@ public class Luck {
 
     private static final String BOT_NAME = "Luck";
     private static final String SEPARATOR = "____________________________________________________________";
+    private static final int MAX_TASKS = 100;
+    private static final String[] TASKS = new String[MAX_TASKS];
+    private static int taskCount = 0;
 
     public static String getBanner() {
         return BANNER;
@@ -27,17 +30,41 @@ public class Luck {
         while (true) {
             input = scanner.nextLine();
             System.out.println(SEPARATOR);
-            System.out.println("     " + input);
-            System.out.println(SEPARATOR);
 
             if (input.equalsIgnoreCase("bye")) {
                 System.out.println("     Bye. Hope to see you again soon!");
                 System.out.println(SEPARATOR);
                 break;
             }
+
+            if (input.equalsIgnoreCase("list")) {
+                printTasks();
+                continue;
+            }
+
+            addTask(input);
+            System.out.println("     added: " + input);
         }
 
         scanner.close();
+    }
+
+    private static void addTask(String task) {
+        if (taskCount < MAX_TASKS) {
+            TASKS[taskCount] = task;
+            taskCount++;
+        }
+    }
+
+    private static void printTasks() {
+        if (taskCount == 0) {
+            System.out.println("     No tasks yet.");
+            return;
+        }
+
+        for (int i = 0; i < taskCount; i++) {
+            System.out.println("     " + (i + 1) + ". " + TASKS[i]);
+        }
     }
 
     private static void printGreeting() {
