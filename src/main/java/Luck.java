@@ -14,8 +14,7 @@ public class Luck {
     private static final String BOT_NAME = "Luck";
     private static final String SEPARATOR = "____________________________________________________________";
     private static final int MAX_TASKS = 100;
-    private static final String[] TASKS = new String[MAX_TASKS];
-    private static final boolean[] DONE = new boolean[MAX_TASKS];
+    private static final Task[] TASKS = new Task[MAX_TASKS];
     private static int taskCount = 0;
 
     public static String getBanner() {
@@ -60,10 +59,9 @@ public class Luck {
         scanner.close();
     }
 
-    private static void addTask(String task) {
+    private static void addTask(String taskDescription) {
         if (taskCount < MAX_TASKS) {
-            TASKS[taskCount] = task;
-            DONE[taskCount] = false;
+            TASKS[taskCount] = new Task(taskDescription);
             taskCount++;
         }
     }
@@ -76,9 +74,9 @@ public class Luck {
                 return;
             }
 
-            DONE[index] = true;
+            TASKS[index].markAsDone();
             System.out.println("     Nice! I've marked this task as done:");
-            System.out.println("       [X] " + TASKS[index]);
+            System.out.println("       " + TASKS[index]);
         } catch (NumberFormatException e) {
             System.out.println("     Please enter a valid task number.");
         }
@@ -92,9 +90,9 @@ public class Luck {
                 return;
             }
 
-            DONE[index] = false;
+            TASKS[index].markAsNotDone();
             System.out.println("     OK, I've marked this task as not done yet:");
-            System.out.println("       [ ] " + TASKS[index]);
+            System.out.println("       " + TASKS[index]);
         } catch (NumberFormatException e) {
             System.out.println("     Please enter a valid task number.");
         }
@@ -108,8 +106,7 @@ public class Luck {
 
         System.out.println("     Here are the tasks in your list:");
         for (int i = 0; i < taskCount; i++) {
-            String status = DONE[i] ? "[X]" : "[ ]";
-            System.out.println("     " + (i + 1) + "." + status + " " + TASKS[i]);
+            System.out.println("     " + (i + 1) + "." + TASKS[i]);
         }
     }
 
