@@ -1,4 +1,7 @@
-import java.util.Scanner;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Luck {
     /**
@@ -14,22 +17,43 @@ public class Luck {
     private static final String BOT_NAME = "Luck";
     private static final String SEPARATOR = "____________________________________________________________";
     private static final int MAX_TASKS = 100;
-    private static final Task[] TASKS = new Task[MAX_TASKS];
-    private static int taskCount = 0;
+    private static final Path DATA_FILE = findProjectRoot().resolve("data").resolve("luck.txt");
+    private static final TaskStorage TASK_STORAGE = new TaskStorage(DATA_FILE);
+    private static final TaskList TASK_LIST = new TaskList();
+    private static final ConsoleUI UI = new ConsoleUI();
+
+    private static Path findProjectRoot() {
+        Path current = Path.of("").toAbsolutePath();
+
+        for (int i = 0; i < 10; i++) {
+            if (Files.exists(current.resolve("src"))
+                    && (Files.exists(current.resolve("build.gradle"))
+                    || Files.exists(current.resolve("pom.xml"))
+                    || Files.exists(current.resolve(".git")))) {
+                return current;
+            }
+
+            if (current.getParent() == null) {
+                break;
+            }
+            current = current.getParent();
+        }
+
+        return Path.of("").toAbsolutePath();
+    }
 
     public static String getBanner() {
         return BANNER;
     }
 
     public static void main(String[] args) {
-        printGreeting();
-
-        Scanner scanner = new Scanner(System.in);
-        String input;
+        ensureStorageExists();
+        loadTasks();
+        UI.printGreeting();
 
         while (true) {
-            input = scanner.nextLine();
-            System.out.println(SEPARATOR);
+            String input = UI.readInput();
+            UI.printSeparator();
 
             try {
                 if (input == null || input.trim().isEmpty()) {
@@ -37,8 +61,8 @@ public class Luck {
                 }
 
                 if (input.equalsIgnoreCase("bye")) {
-                    System.out.println("     Bye. Hope to see you again soon!");
-                    System.out.println(SEPARATOR);
+                    UI.printMessage("     Bye. Hope to see you again soon!");
+                    UI.printSeparator();
                     break;
                 }
 
@@ -74,11 +98,11 @@ public class Luck {
 
                 throw new LuckException("No luck there, I have no idea what this mean LOL.");
             } catch (LuckException e) {
-                System.out.println("     OOPS!!! " + e.getMessage());
+                UI.printMessage("     OOPS!!! " + e.getMessage());
             }
         }
 
-        scanner.close();
+        UI.close();
     }
 
     private static void addTodoTask(String taskDescription) throws LuckException {
@@ -86,15 +110,16 @@ public class Luck {
             throw new LuckException("This can't be empty, do better.");
         }
 
-        if (taskCount >= MAX_TASKS) {
+        if (TASK_LIST.size() >= MAX_TASKS) {
             throw new LuckException("Your task list is full.");
         }
 
-        TASKS[taskCount] = new Todo(taskDescription.trim());
-        taskCount++;
+        Task task = new Todo(taskDescription.trim());
+        TASK_LIST.add(task);
+        saveTasks();
         System.out.println("     Got it. I've added this task:");
-        System.out.println("       " + TASKS[taskCount - 1]);
-        System.out.println("     Now you have " + taskCount + " tasks in the list.");
+        System.out.println("       " + task);
+        System.out.println("     Now you have " + TASK_LIST.size() + " tasks in the list.");
     }
 
     private static void addDeadlineTask(String rawInput) throws LuckException {
@@ -114,15 +139,16 @@ public class Luck {
             throw new LuckException("This ain't valid my friend.");
         }
 
-        if (taskCount >= MAX_TASKS) {
+        if (TASK_LIST.size() >= MAX_TASKS) {
             throw new LuckException("Your task list is full.");
         }
 
-        TASKS[taskCount] = new Deadline(description, by);
-        taskCount++;
+        Task task = new Deadline(description, by);
+        TASK_LIST.add(task);
+        saveTasks();
         System.out.println("     Got it. I've added this task:");
-        System.out.println("       " + TASKS[taskCount - 1]);
-        System.out.println("     Now you have " + taskCount + " tasks in the list.");
+        System.out.println("       " + task);
+        System.out.println("     Now you have " + TASK_LIST.size() + " tasks in the list.");
     }
 
     private static void addEventTask(String rawInput) throws LuckException {
@@ -149,27 +175,29 @@ public class Luck {
             throw new LuckException("This ain't valid my friend.");
         }
 
-        if (taskCount >= MAX_TASKS) {
+        if (TASK_LIST.size() >= MAX_TASKS) {
             throw new LuckException("Your task list is full.");
         }
 
-        TASKS[taskCount] = new Event(description, from, to);
-        taskCount++;
+        Task task = new Event(description, from, to);
+        TASK_LIST.add(task);
+        saveTasks();
         System.out.println("     Got it. I've added this task:");
-        System.out.println("       " + TASKS[taskCount - 1]);
-        System.out.println("     Now you have " + taskCount + " tasks in the list.");
+        System.out.println("       " + task);
+        System.out.println("     Now you have " + TASK_LIST.size() + " tasks in the list.");
     }
 
     private static void markTask(String indexText) throws LuckException {
         try {
             int index = Integer.parseInt(indexText) - 1;
-            if (index < 0 || index >= taskCount) {
+            if (index < 0 || index >= TASK_LIST.size()) {
                 throw new LuckException("This ain't valid my friend.");
             }
 
-            TASKS[index].markAsDone();
+            TASK_LIST.get(index).markAsDone();
+            saveTasks();
             System.out.println("     Nice! I've marked this task as done:");
-            System.out.println("       " + TASKS[index]);
+            System.out.println("       " + TASK_LIST.get(index));
         } catch (NumberFormatException e) {
             throw new LuckException("This ain't valid my friend.");
         }
@@ -178,35 +206,46 @@ public class Luck {
     private static void unmarkTask(String indexText) throws LuckException {
         try {
             int index = Integer.parseInt(indexText) - 1;
-            if (index < 0 || index >= taskCount) {
+            if (index < 0 || index >= TASK_LIST.size()) {
                 throw new LuckException("This ain't valid my friend.");
             }
 
-            TASKS[index].markAsNotDone();
+            TASK_LIST.get(index).markAsNotDone();
+            saveTasks();
             System.out.println("     OK, I've marked this task as not done yet:");
-            System.out.println("       " + TASKS[index]);
+            System.out.println("       " + TASK_LIST.get(index));
         } catch (NumberFormatException e) {
             throw new LuckException("This ain't valid my friend.");
         }
     }
 
-    private static void printTasks() {
-        if (taskCount == 0) {
-            System.out.println("     No tasks yet.");
-            return;
-        }
+    private static void ensureStorageExists() {
+        TASK_STORAGE.ensureFileExists();
+    }
 
-        System.out.println("     Here are the tasks in your list:");
-        for (int i = 0; i < taskCount; i++) {
-            System.out.println("     " + (i + 1) + "." + TASKS[i]);
+    private static void loadTasks() {
+        List<Task> tasks = TASK_STORAGE.loadTasks();
+        for (Task task : tasks) {
+            if (TASK_LIST.size() >= MAX_TASKS) {
+                break;
+            }
+            try {
+                TASK_LIST.add(task);
+            } catch (LuckException e) {
+                throw new RuntimeException("Unable to reload saved tasks.", e);
+            }
         }
     }
 
+    private static void saveTasks() {
+        TASK_STORAGE.saveTasks(TASK_LIST.getAll());
+    }
+
+    private static void printTasks() {
+        UI.printTasks(TASK_LIST);
+    }
+
     private static void printGreeting() {
-        System.out.println(SEPARATOR);
-        System.out.print(getBanner());
-        System.out.println("Hello! I'm " + BOT_NAME + ".");
-        System.out.println("What can I do for you?");
-        System.out.println(SEPARATOR);
+        UI.printGreeting();
     }
 }

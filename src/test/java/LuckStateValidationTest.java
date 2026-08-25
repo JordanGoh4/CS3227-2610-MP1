@@ -14,6 +14,10 @@ class LuckStateValidationTest {
 
     @BeforeEach
     void resetState() throws Exception {
+        java.nio.file.Path dataFile = java.nio.file.Path.of("data", "duke.txt");
+        java.nio.file.Files.createDirectories(dataFile.getParent());
+        java.nio.file.Files.deleteIfExists(dataFile);
+
         Field taskCountField = Luck.class.getDeclaredField("taskCount");
         taskCountField.setAccessible(true);
         taskCountField.setInt(null, 0);
@@ -81,6 +85,22 @@ class LuckStateValidationTest {
         invokeAndExpectLuckException(METHOD_UNMARK, "0", "This ain't valid my friend.");
         assertEquals(" ", getTaskAt(0).getStatusIcon());
         assertEquals(" ", getTaskAt(1).getStatusIcon());
+    }
+
+    @Test
+    void saveTasksWritesExpectedFormatToDisk() throws Exception {
+        java.nio.file.Path dataFile = java.nio.file.Path.of("data", "luck.txt");
+        java.nio.file.Files.createDirectories(dataFile.getParent());
+        java.nio.file.Files.deleteIfExists(dataFile);
+
+        invokeAndExpectNoException(METHOD_ADD_TODO, "read book");
+        invokeAndExpectNoException(METHOD_ADD_DEADLINE, "return book /by Sunday");
+        invokeAndExpectNoException(METHOD_ADD_EVENT, "project meeting /from Mon 2pm /to 4pm");
+
+        String content = java.nio.file.Files.readString(dataFile);
+        assertTrue(content.contains("T | 0 | read book"));
+        assertTrue(content.contains("D | 0 | return book | Sunday"));
+        assertTrue(content.contains("E | 0 | project meeting | Mon 2pm to 4pm"));
     }
 
     private static void invokeAndExpectNoException(String methodName, String arg) throws Exception {

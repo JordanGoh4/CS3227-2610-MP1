@@ -19,5 +19,9 @@ _temp/
 # Compiled Java class files
 *.class
 
+# Runtime data files
+/data/
+*.txt
+
 /text-ui-test/ACTUAL.TXT
 text-ui-test/EXPECTED-UNIX.TXT
