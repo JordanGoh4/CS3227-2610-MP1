@@ -72,7 +72,8 @@ public class TaskParser {
 
         String status = task.isDone ? "1" : "0";
         if (task instanceof Deadline) {
-            return "D | " + status + " | " + task.description + " | " + ((Deadline) task).by;
+            return "D | " + status + " | " + task.description + " | "
+                    + DateTimeParser.toStorageString(((Deadline) task).getBy());
         }
 
         if (task instanceof Event) {
