@@ -13,7 +13,22 @@ repositories {
     mavenCentral()
 }
 
+def javaFxVersion = '17.0.7'
+
 dependencies {
+    implementation "org.openjfx:javafx-base:${javaFxVersion}:win"
+    implementation "org.openjfx:javafx-base:${javaFxVersion}:mac"
+    implementation "org.openjfx:javafx-base:${javaFxVersion}:linux"
+    implementation "org.openjfx:javafx-controls:${javaFxVersion}:win"
+    implementation "org.openjfx:javafx-controls:${javaFxVersion}:mac"
+    implementation "org.openjfx:javafx-controls:${javaFxVersion}:linux"
+    implementation "org.openjfx:javafx-graphics:${javaFxVersion}:win"
+    implementation "org.openjfx:javafx-graphics:${javaFxVersion}:mac"
+    implementation "org.openjfx:javafx-graphics:${javaFxVersion}:linux"
+    implementation "org.openjfx:javafx-fxml:${javaFxVersion}:win"
+    implementation "org.openjfx:javafx-fxml:${javaFxVersion}:mac"
+    implementation "org.openjfx:javafx-fxml:${javaFxVersion}:linux"
+
     String jUnitVersion = '5.14.4'
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
@@ -37,7 +52,7 @@ test {
 }
 
 application {
-    mainClass = 'luck.Luck'
+    mainClass = 'luck.gui.Launcher'
 }
 
 jar {
@@ -51,7 +66,7 @@ shadowJar {
     archiveFileName = 'luck.jar'
     manifest {
         attributes(
-                'Main-Class': 'luck.Luck'
+                'Main-Class': 'luck.gui.Launcher'
         )
     }
 }
