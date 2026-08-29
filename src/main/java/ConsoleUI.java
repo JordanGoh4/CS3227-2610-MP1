@@ -40,6 +40,12 @@ public class ConsoleUI {
         System.out.println(message);
     }
 
+    public void printTaskAdded(Task task, int taskCount) {
+        System.out.println("     Got it. I've added this task:");
+        System.out.println("       " + task);
+        System.out.println("     Now you have " + taskCount + " tasks in the list.");
+    }
+
     public String readInput() {
         return scanner.nextLine();
     }

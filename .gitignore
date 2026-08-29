@@ -22,6 +22,7 @@ _temp/
 # Runtime data files
 /data/
 *.txt
+*.sh
 
 /text-ui-test/ACTUAL.TXT
 text-ui-test/EXPECTED-UNIX.TXT
