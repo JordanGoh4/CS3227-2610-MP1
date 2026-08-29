@@ -16,7 +16,7 @@ class TaskParserTest {
     private final TaskParser parser = new TaskParser();
 
     @Test
-    void parseAllCreatesEachSupportedTaskType() {
+    void parseAll_validContent_supportedTasksCreated() {
         String content = "T | 0 | buy milk\n"
                 + "D | 1 | submit report | 2026-08-25T00:00\n"
                 + "E | 0 | meeting | 2pm to 4pm";
@@ -31,14 +31,14 @@ class TaskParserTest {
     }
 
     @Test
-    void serializeProducesExpectedTodoFormat() {
+    void serialize_todoTask_expectedFormat() {
         String result = parser.serialize(new luck.model.Todo("read book"));
 
         assertEquals("T | 0 | read book", result);
     }
 
     @Test
-    void malformedLinesAreIgnored() {
+    void parseAll_malformedLine_emptyResult() {
         assertTrue(parser.parseAll("not a valid task").isEmpty());
     }
 }

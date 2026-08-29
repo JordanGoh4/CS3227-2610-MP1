@@ -36,7 +36,7 @@ class LuckStateValidationTest {
     }
 
     @Test
-    void todoCommandAddsTask() throws Exception {
+    void todoCommand_validInput_taskAdded() throws Exception {
         handler.handle("todo buy milk");
 
         assertEquals(1, taskList.size());
@@ -44,14 +44,14 @@ class LuckStateValidationTest {
     }
 
     @Test
-    void invalidTodoDoesNotChangeTaskList() {
+    void todoCommand_emptyInput_taskListUnchanged() {
         assertThrows(LuckException.class, () -> handler.handle("todo   "));
 
         assertEquals(0, taskList.size());
     }
 
     @Test
-    void validDeadlineIsAdded() throws Exception {
+    void deadlineCommand_validDate_taskAdded() throws Exception {
         handler.handle("deadline submit report /by 25/08/2026");
 
         assertEquals(1, taskList.size());
@@ -59,7 +59,7 @@ class LuckStateValidationTest {
     }
 
     @Test
-    void invalidDeadlineDateIsRejected() {
+    void deadlineCommand_invalidDate_exceptionThrown() {
         assertThrows(LuckException.class,
                 () -> handler.handle("deadline submit report /by 25-08-2026"));
 
@@ -67,7 +67,7 @@ class LuckStateValidationTest {
     }
 
     @Test
-    void validEventIsAdded() throws Exception {
+    void eventCommand_validInput_taskAdded() throws Exception {
         handler.handle("event team sync /from 2pm /to 4pm");
 
         assertEquals(1, taskList.size());
@@ -75,7 +75,7 @@ class LuckStateValidationTest {
     }
 
     @Test
-    void markAndUnmarkUpdateTaskState() throws Exception {
+    void markCommands_validIndex_statusUpdated() throws Exception {
         handler.handle("todo study for exam");
 
         handler.handle("mark 1");
@@ -86,7 +86,7 @@ class LuckStateValidationTest {
     }
 
     @Test
-    void deleteRemovesSelectedTask() throws Exception {
+    void deleteCommand_validIndex_taskRemoved() throws Exception {
         handler.handle("todo buy milk");
         handler.handle("todo read book");
 
@@ -97,7 +97,7 @@ class LuckStateValidationTest {
     }
 
     @Test
-    void invalidDeleteDoesNotChangeTaskList() throws Exception {
+    void deleteCommand_invalidIndex_taskListUnchanged() throws Exception {
         handler.handle("todo buy milk");
 
         assertThrows(LuckException.class, () -> handler.handle("delete 99"));
@@ -107,7 +107,7 @@ class LuckStateValidationTest {
     }
 
     @Test
-    void commandsPersistTasksToStorage() throws Exception {
+    void taskCommands_validInput_tasksPersisted() throws Exception {
         handler.handle("todo read book");
         handler.handle("deadline return book /by 25/08/2026");
         handler.handle("event project meeting /from 2pm /to 4pm");
@@ -117,7 +117,7 @@ class LuckStateValidationTest {
     }
 
     @Test
-    void byeCommandEndsSession() throws Exception {
+    void byeCommand_executed_sessionEnds() throws Exception {
         assertFalse(handler.handle("bye"));
     }
 }

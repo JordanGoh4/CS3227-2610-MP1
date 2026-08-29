@@ -10,24 +10,24 @@ import org.junit.jupiter.api.Test;
 /** Tests supported date/time input and output formats. */
 class DateTimeParserTest {
     @Test
-    void parsesSlashSeparatedDate() {
+    void parse_slashSeparatedDate_dateReturned() {
         assertEquals(LocalDateTime.of(2026, 8, 25, 0, 0),
                 DateTimeParser.parse("25/08/2026"));
     }
 
     @Test
-    void parsesDateAndTimeWithColon() {
+    void parse_dateAndTimeWithColon_dateTimeReturned() {
         assertEquals(LocalDateTime.of(2026, 8, 25, 14, 30),
                 DateTimeParser.parse("25/08/2026 14:30"));
     }
 
     @Test
-    void rejectsUnsupportedDateFormat() {
+    void parse_unsupportedDateFormat_nullReturned() {
         assertNull(DateTimeParser.parse("25-08-2026"));
     }
 
     @Test
-    void formatsDateWithTimeForDisplay() {
+    void formatForDisplay_dateTime_formattedTextReturned() {
         assertEquals("Aug 25 2026, 2:30 PM",
                 DateTimeParser.formatForDisplay(LocalDateTime.of(2026, 8, 25, 14, 30)));
     }

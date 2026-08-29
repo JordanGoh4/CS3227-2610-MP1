@@ -2,7 +2,10 @@ package luck.storage;
 
 import java.util.ArrayList;
 import java.util.List;
-import luck.model.*;
+import luck.model.Deadline;
+import luck.model.Event;
+import luck.model.Task;
+import luck.model.Todo;
 import luck.util.DateTimeParser;
 
 public class TaskParser {

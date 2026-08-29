@@ -9,6 +9,6 @@ public class ListCommand implements Command {
 
     @Override
     public void execute(String arguments) {
-        context.ui.printTasks(context.taskList);
+        context.getUi().printTasks(context.getTaskList());
     }
 }

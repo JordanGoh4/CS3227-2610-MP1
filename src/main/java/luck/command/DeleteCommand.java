@@ -14,10 +14,10 @@ public class DeleteCommand implements Command {
         } catch (NumberFormatException e) {
             throw new LuckException("This ain't valid my friend.");
         }
-        Task task = context.taskList.get(index);
-        context.taskList.remove(index);
-        context.storage.saveTasks(context.taskList.getAll());
-        context.ui.printMessage("     Got it. I've removed this task:");
-        context.ui.printMessage("       " + task);
+        Task task = context.getTaskList().get(index);
+        context.getTaskList().remove(index);
+        context.getStorage().saveTasks(context.getTaskList().getAll());
+        context.getUi().printMessage("     Got it. I've removed this task:");
+        context.getUi().printMessage("       " + task);
     }
 }

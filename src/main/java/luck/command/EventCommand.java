@@ -1,6 +1,7 @@
 package luck.command;
 import luck.exception.LuckException;
-import luck.model.*;
+import luck.model.Event;
+import luck.model.Task;
 /** Creates an event task. */
 public class EventCommand implements Command {
     private final CommandContext context;
@@ -21,8 +22,8 @@ public class EventCommand implements Command {
             throw new LuckException("This ain't valid my friend.");
         }
         Task task = new Event(fromParts[0].trim(), toParts[0].trim(), toParts[1].trim());
-        context.taskList.add(task);
-        context.storage.saveTasks(context.taskList.getAll());
-        context.ui.printTaskAdded(task, context.taskList.size());
+        context.getTaskList().add(task);
+        context.getStorage().saveTasks(context.getTaskList().getAll());
+        context.getUi().printTaskAdded(task, context.getTaskList().size());
     }
 }

@@ -1,6 +1,7 @@
 package luck.command;
 import luck.exception.LuckException;
-import luck.model.*;
+import luck.model.Task;
+import luck.model.Todo;
 /** Creates a todo task. */
 public class TodoCommand implements Command {
     private final CommandContext context;
@@ -15,8 +16,8 @@ public class TodoCommand implements Command {
             throw new LuckException("This can't be empty, do better.");
         }
         Task task = new Todo(text.trim());
-        context.taskList.add(task);
-        context.storage.saveTasks(context.taskList.getAll());
-        context.ui.printTaskAdded(task, context.taskList.size());
+        context.getTaskList().add(task);
+        context.getStorage().saveTasks(context.getTaskList().getAll());
+        context.getUi().printTaskAdded(task, context.getTaskList().size());
     }
 }

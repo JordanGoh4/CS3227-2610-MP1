@@ -10,13 +10,13 @@ public class UnmarkCommand implements Command {
     public void execute(String arguments) throws LuckException {
         Task task;
         try {
-            task = context.taskList.get(Integer.parseInt(arguments.trim()) - 1);
+            task = context.getTaskList().get(Integer.parseInt(arguments.trim()) - 1);
         } catch (NumberFormatException e) {
             throw new LuckException("This ain't valid my friend.");
         }
         task.markAsNotDone();
-        context.storage.saveTasks(context.taskList.getAll());
-        context.ui.printMessage("     OK, I've marked this task as not done yet:");
-        context.ui.printMessage("       " + task);
+        context.getStorage().saveTasks(context.getTaskList().getAll());
+        context.getUi().printMessage("     OK, I've marked this task as not done yet:");
+        context.getUi().printMessage("       " + task);
     }
 }

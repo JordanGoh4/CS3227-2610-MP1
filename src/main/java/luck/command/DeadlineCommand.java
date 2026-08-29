@@ -1,6 +1,6 @@
 package luck.command;
 import luck.exception.LuckException;
-import luck.model.*;
+import luck.model.Deadline;
 /** Creates a deadline with a valid date. */
 public class DeadlineCommand implements Command {
     private final CommandContext context;
@@ -22,8 +22,8 @@ public class DeadlineCommand implements Command {
             throw new LuckException(
                     "Invalid date format. Use d/M/yyyy or d/M/yyyy HHmm.");
         }
-        context.taskList.add(deadline);
-        context.storage.saveTasks(context.taskList.getAll());
-        context.ui.printTaskAdded(deadline, context.taskList.size());
+        context.getTaskList().add(deadline);
+        context.getStorage().saveTasks(context.getTaskList().getAll());
+        context.getUi().printTaskAdded(deadline, context.getTaskList().size());
     }
 }

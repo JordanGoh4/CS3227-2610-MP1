@@ -10,14 +10,14 @@ public class MarkCommand implements Command {
     public void execute(String arguments) throws LuckException {
         Task task = getTask(arguments);
         task.markAsDone();
-        context.storage.saveTasks(context.taskList.getAll());
-        context.ui.printMessage("     Nice! I've marked this task as done:");
-        context.ui.printMessage("       " + task);
+        context.getStorage().saveTasks(context.getTaskList().getAll());
+        context.getUi().printMessage("     Nice! I've marked this task as done:");
+        context.getUi().printMessage("       " + task);
     }
 
     private Task getTask(String arguments) throws LuckException {
         try {
-            return context.taskList.get(Integer.parseInt(arguments.trim()) - 1);
+            return context.getTaskList().get(Integer.parseInt(arguments.trim()) - 1);
         } catch (NumberFormatException e) {
             throw new LuckException("This ain't valid my friend.");
         }

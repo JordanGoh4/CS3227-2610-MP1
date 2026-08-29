@@ -9,6 +9,6 @@ public class ByeCommand implements Command {
 
     @Override
     public void execute(String arguments) {
-        context.ui.printMessage("     Bye. Hope to see you again soon!");
+        context.getUi().printMessage("     Bye. Hope to see you again soon!");
     }
 }

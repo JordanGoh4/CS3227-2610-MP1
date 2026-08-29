@@ -10,7 +10,7 @@ import luck.exception.LuckException;
 /** Tests task-list collection operations and index validation. */
 class TaskListTest {
     @Test
-    void addAndGetReturnTasksInInsertionOrder() throws Exception {
+    void addAndGet_tasksReturnedInInsertionOrder() throws Exception {
         TaskList list = new TaskList();
         list.add(new Todo("first"));
         list.add(new Todo("second"));
@@ -21,7 +21,7 @@ class TaskListTest {
     }
 
     @Test
-    void removeDeletesTheTaskAtTheGivenIndex() throws Exception {
+    void remove_validIndex_taskDeleted() throws Exception {
         TaskList list = new TaskList();
         list.add(new Todo("first"));
         list.add(new Todo("second"));
@@ -33,7 +33,7 @@ class TaskListTest {
     }
 
     @Test
-    void invalidIndexesThrowLuckException() {
+    void getAndRemove_invalidIndex_exceptionThrown() {
         TaskList list = new TaskList();
 
         assertThrows(LuckException.class, () -> list.get(0));
