@@ -1,6 +1,7 @@
 # Reflections on AI-assisted Software Engineering
 
-This document reflects on using AI (LLMs) to assist in software engineering tasks for this small project. Below are three example prompts used during development and explanations of why they were helpful.
+This document reflects on using AI (LLMs) to assist in developing Luck,
+including design, implementation, testing, documentation, and code quality.
 
 ## Prompt Example 1 — Refactor source to improve readability
 
@@ -12,7 +13,8 @@ This document reflects on using AI (LLMs) to assist in software engineering task
 
 - Prompt: "Write a concise User Guide for this Java CLI app that explains prerequisites, build and run commands, and manual testing steps."
 - Why: Asking for a concise and structured user guide produced documentation that peer testers can follow easily.
-- Outcome: `docs/UserGuide.md` was created with exact commands to compile and run the app.
+- Outcome: `docs/UserGuide.md` was updated with the current Gradle commands,
+  supported commands, persistence behavior, and test instructions.
 
 ## Prompt Example 3 — Create a Reflection and Logs
 
@@ -25,6 +27,29 @@ This document reflects on using AI (LLMs) to assist in software engineering task
 - Precise prompts yield conservative, safe code changes.
 - Always verify AI-generated output; small mistakes can creep in with assumptions about environment or tooling.
 - Use AI to draft documentation and boilerplate; humans should review for accuracy.
+
+## Prompt Example 4 — Organize commands using OOP
+
+- Prompt: "Create separate command classes under the `luck.command` package."
+- Why: Separating command responsibilities makes the code easier to extend and
+  allows future travel-related commands to be added independently.
+- Outcome: `CommandHandler` now dispatches to command objects such as
+  `FindCommand`, `DeleteCommand`, and `DeadlineCommand`.
+
+## Prompt Example 5 — Add high-value tests
+
+- Prompt: "Add JUnit tests for the most important task, parsing, storage, and
+  command behaviors."
+- Why: Focused tests provide confidence in core behavior while keeping the test
+  suite maintainable.
+- Outcome: Tests cover approximately the top 50% of high-value methods,
+  including validation, persistence, searching, and task-list operations.
+
+## Testing commitment
+
+Tests should be reviewed and updated after every code change. The coverage
+target prioritizes complex, core, and critical business logic rather than
+maximizing a percentage without considering test value.
 
 ## Test Coverage Target
 

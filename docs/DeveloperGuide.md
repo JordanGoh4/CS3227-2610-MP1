@@ -1,48 +1,62 @@
-# Developer Guide
+# Luck Developer Guide
 
-## Purpose and Scope
+## Architecture
 
-This developer guide describes the design and maintenance considerations for the `Luck` project. The system is intentionally small: a single Java class that prints an ASCII banner.
+Luck is a Java 25 Gradle application. Its entry point is `luck.Luck`.
 
-## Repository Layout
-
-- `src/main/java/Luck.java` — main application source.
-- `docs/` — documentation (UserGuide, DeveloperGuide, Reflections).
-- `logs/` — development interaction summaries.
-
-## Coding Style
-
-- Keep methods small and focused.
-- Use descriptive names and constants for static content.
-- Add Javadoc comments for public methods and classes.
-
-## Build
-
-This project uses the plain JDK toolchain and the Swing GUI toolkit. From repository root:
-
-```bash
-javac -d out src/main/java/Luck.java
+```text
+src/main/java/luck/
+├── Luck.java
+├── command/    Command interface, handler, context, and command classes
+├── model/      Task, Todo, Deadline, Event, TaskList, and TaskType
+├── storage/    TaskStorage and TaskParser
+├── ui/         ConsoleUI
+├── util/       DateTimeParser
+└── exception/  LuckException
 ```
 
-Run with:
+## Command design
 
-```bash
-javac -d out src/main/java/Luck.java
-java -cp out Luck
+`CommandHandler` maps command keywords to objects implementing the `Command`
+interface. `CommandContext` supplies the shared `TaskList`, `TaskStorage`,
+and `ConsoleUI` services. Each command class performs one operation, which
+makes new commands easy to add without expanding the main input loop.
+
+To add a command:
+
+1. Create a class in `luck.command` implementing `Command`.
+2. Validate its arguments and throw `LuckException` for invalid input.
+3. Register it in the `CommandHandler` constructor.
+4. Add unit tests under the matching `luck.command` test package.
+5. Update `docs/UserGuide.md`.
+
+## Build and test
+
+```powershell
+gradle build
+gradle test
+gradle run
 ```
 
-Notes on GUI:
+The project requires Java 25. Gradle uses the configured application entry
+point `luck.Luck` and connects the `run` task to standard input.
 
-- The application uses Swing and must be launched on the Event Dispatch Thread (EDT). The `main` method invokes `SwingUtilities.invokeLater` to create the GUI.
-- The banner is displayed in a non-editable `JTextArea` with a monospaced font.
+## Fat JAR
 
-## Extending the Project
+The Shadow plugin creates a bundled application JAR:
 
-If you wish to extend the project:
+```powershell
+gradle shadowJar
+```
 
-- Add new classes under `src/main/java/` and keep package structure consistent.
-- Add unit tests (recommended) in a `src/test/java/` hierarchy and use a build tool such as Maven or Gradle for test automation.
+The output is written to `build/libs/duke.jar` according to the current
+Gradle configuration. It can be run with:
 
-## Acknowledgements
+```powershell
+java -jar build/libs/duke.jar
+```
 
-- Portions of the repository documentation and small refactors were produced with assistance from an AI large language model. The code and documentation were reviewed and edited by the developers to ensure accuracy.
+## Coding and Git standards
+
+Java code follows `.codex/skills/seedu-java-coding-standard/SKILL.md`.
+Commits and branch names follow `.codex/skills/seedu-git-standard/SKILL.md`.

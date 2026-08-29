@@ -1,38 +1,72 @@
-# User Guide
+# Luck User Guide
 
 ## Overview
 
-`Luck` is a tiny Java command-line app that prints an ASCII banner to standard output. It is a minimal demonstration project intended for teaching and review.
-
-## Features
-
-- Print a multi-line ASCII banner to the console.
+Luck is a Java 25 command-line task manager. It lets users create, view,
+search, complete, uncomplete, and delete todo, deadline, and event tasks.
 
 ## Prerequisites
 
-- Java JDK 8 or newer installed and reachable via `javac`/`java` on your PATH.
+- Java Development Kit (JDK) 25.
+- Gradle 9.2 or newer.
 
-## Build & Run
+Verify the installations with:
 
-From the repository root run:
-
-```bash
-javac -d out src/main/java/Luck.java
-java -cp out Luck
+```powershell
+java -version
+gradle --version
 ```
 
-This will compile `Luck.java` into the `out` directory and run the `Luck` main class. The program opens a small desktop window that displays the ASCII banner.
+## Build and run
+
+From the repository root:
+
+```powershell
+gradle build
+gradle run
+```
+
+## Commands
+
+```text
+todo <description>
+deadline <description> /by <date>
+event <description> /from <start> /to <end>
+list
+find <keyword>
+mark <task number>
+unmark <task number>
+delete <task number>
+bye
+```
+
+Examples:
+
+```text
+todo pack passport
+deadline submit report /by 25/08/2026 1430
+event flight /from 25/08/2026 0900 /to 25/08/2026 1200
+find passport
+mark 1
+delete 2
+```
+
+Deadline dates must use a supported numeric format such as `25/08/2026`,
+`25/08/2026 1430`, or `25/08/2026 14:30`. Invalid commands are rejected
+without changing the task list.
+
+## Saving tasks
+
+Luck automatically saves tasks to `data/luck.txt` after task changes and
+loads them when the application starts.
 
 ## Testing
 
-This project has no automated tests. To manually test, run the commands above and verify a window titled "Luck" opens showing the ASCII banner.
+Run the automated JUnit tests with:
 
-## Project Structure
+```powershell
+gradle test
+```
 
-- `src/main/java/Luck.java` — application entry point.
-- `docs/` — user and developer documentation.
-- `logs/` — development interaction summaries.
-
-## Contact
-
-For questions about the code or documentation, open an issue or contact the repository maintainer.
+The tests cover command validation, task-list operations, parsing, date/time
+handling, persistence, and task searching.
