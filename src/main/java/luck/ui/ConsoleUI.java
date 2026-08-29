@@ -1,6 +1,7 @@
 package luck.ui;
 
 import java.util.Scanner;
+import java.util.List;
 import luck.Luck;
 import luck.exception.LuckException;
 import luck.model.Task;
@@ -39,6 +40,19 @@ public class ConsoleUI {
             } catch (LuckException e) {
                 System.out.println("     OOPS!!! " + e.getMessage());
             }
+        }
+    }
+
+    /** Prints tasks matching a search keyword. */
+    public void printMatchingTasks(List<Task> matchingTasks) {
+        if (matchingTasks.isEmpty()) {
+            System.out.println("     No matching tasks found.");
+            return;
+        }
+
+        System.out.println("     Here are the matching tasks in your list:");
+        for (int i = 0; i < matchingTasks.size(); i++) {
+            System.out.println("     " + (i + 1) + "." + matchingTasks.get(i));
         }
     }
 

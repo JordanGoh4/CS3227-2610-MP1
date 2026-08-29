@@ -3,6 +3,8 @@ package luck.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import luck.exception.LuckException;
@@ -38,5 +40,19 @@ class TaskListTest {
 
         assertThrows(LuckException.class, () -> list.get(0));
         assertThrows(LuckException.class, () -> list.remove(-1));
+    }
+
+    @Test
+    void find_keywordMatchesDescriptionsIgnoringCase() throws Exception {
+        TaskList list = new TaskList();
+        list.add(new Todo("read book"));
+        list.add(new Todo("buy milk"));
+        list.add(new Todo("return BOOK"));
+
+        List<Task> matches = list.find("book");
+
+        assertEquals(2, matches.size());
+        assertEquals("read book", matches.get(0).getDescription());
+        assertEquals("return BOOK", matches.get(1).getDescription());
     }
 }

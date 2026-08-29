@@ -10,6 +10,7 @@ public class CommandHandler {
         commands.put("deadline", new DeadlineCommand(context));
         commands.put("event", new EventCommand(context));
         commands.put("list", new ListCommand(context));
+        commands.put("find", new FindCommand(context));
         commands.put("mark", new MarkCommand(context));
         commands.put("unmark", new UnmarkCommand(context));
         commands.put("delete", new DeleteCommand(context));
