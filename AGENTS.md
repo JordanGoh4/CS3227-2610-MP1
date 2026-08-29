@@ -38,3 +38,11 @@ Ensure that Java 25 is used when running the application or build tasks. On macO
 Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.
 Do not commit or push unless explicitly asked.
+
+All future commits and branches must also follow
+`.codex/skills/seedu-git-standard/SKILL.md`, based on the
+[SE-EDU Git conventions](https://se-education.org/guides/conventions/git.html).
+Commit subjects must use imperative mood, begin with a capital letter, avoid trailing
+periods, and stay within 72 characters. Non-trivial commits must include a body explaining
+what changed and why, wrapped at 72 characters. Branch names must be meaningful and use
+kebab-case.
