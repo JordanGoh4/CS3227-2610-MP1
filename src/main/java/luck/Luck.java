@@ -3,6 +3,7 @@ package luck;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import luck.command.CommandHandler;
+import luck.command.CommandContext;
 import luck.exception.LuckException;
 import luck.storage.TaskStorage;
 import luck.ui.ConsoleUI;
@@ -28,7 +29,7 @@ public class Luck {
         storage.ensureFileExists();
         TaskList taskList = new TaskList(storage.loadTasks());
         ConsoleUI ui = new ConsoleUI();
-        CommandHandler handler = new CommandHandler(taskList, storage, ui);
+        CommandHandler handler = new CommandHandler(new CommandContext(taskList, storage, ui));
 
         ui.printGreeting();
         while (true) {
