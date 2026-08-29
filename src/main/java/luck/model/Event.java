@@ -1,3 +1,5 @@
+package luck.model;
+
 public class Event extends Task {
     protected String from;
     protected String to;
@@ -6,6 +8,14 @@ public class Event extends Task {
         super(description, TaskType.EVENT);
         this.from = from;
         this.to = to;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public String getTo() {
+        return to;
     }
 
     @Override

@@ -1,9 +1,13 @@
+package luck;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import luck.exception.LuckException;
+import luck.model.Task;
 
 class LuckStateValidationTest {
     private static final String METHOD_ADD_TODO = "addTodoTask";

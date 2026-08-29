@@ -1,5 +1,12 @@
+package luck;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
+import luck.command.CommandHandler;
+import luck.exception.LuckException;
+import luck.storage.TaskStorage;
+import luck.ui.ConsoleUI;
+import luck.model.TaskList;
 
 /** Entry point for the Luck task-management chatbot. */
 public class Luck {

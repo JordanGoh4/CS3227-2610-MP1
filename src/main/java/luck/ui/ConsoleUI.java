@@ -1,4 +1,10 @@
+package luck.ui;
+
 import java.util.Scanner;
+import luck.Luck;
+import luck.exception.LuckException;
+import luck.model.Task;
+import luck.model.TaskList;
 
 public class ConsoleUI {
     private static final String SEPARATOR = "____________________________________________________________";

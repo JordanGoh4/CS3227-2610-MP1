@@ -1,4 +1,7 @@
+package luck.model;
+
 import java.time.LocalDateTime;
+import luck.util.DateTimeParser;
 
 public class Deadline extends Task {
     protected LocalDateTime by;

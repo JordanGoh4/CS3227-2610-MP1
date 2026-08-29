@@ -1,3 +1,5 @@
+package luck.model;
+
 public enum TaskType {
     TODO("T"),
     DEADLINE("D"),

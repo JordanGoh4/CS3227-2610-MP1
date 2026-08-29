@@ -1,5 +1,9 @@
+package luck.storage;
+
 import java.util.ArrayList;
 import java.util.List;
+import luck.model.*;
+import luck.util.DateTimeParser;
 
 public class TaskParser {
     public List<Task> parseAll(String content) {
@@ -70,17 +74,17 @@ public class TaskParser {
             return "";
         }
 
-        String status = task.isDone ? "1" : "0";
+        String status = task.isDone() ? "1" : "0";
         if (task instanceof Deadline) {
-            return "D | " + status + " | " + task.description + " | "
+            return "D | " + status + " | " + task.getDescription() + " | "
                     + DateTimeParser.toStorageString(((Deadline) task).getBy());
         }
 
         if (task instanceof Event) {
-            return "E | " + status + " | " + task.description + " | "
-                    + ((Event) task).from + " to " + ((Event) task).to;
+            return "E | " + status + " | " + task.getDescription() + " | "
+                    + ((Event) task).getFrom() + " to " + ((Event) task).getTo();
         }
 
-        return "T | " + status + " | " + task.description;
+        return "T | " + status + " | " + task.getDescription();
     }
 }

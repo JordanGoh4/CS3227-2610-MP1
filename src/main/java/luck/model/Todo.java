@@ -1,3 +1,5 @@
+package luck.model;
+
 public class Todo extends Task {
     public Todo(String description) {
         super(description, TaskType.TODO);

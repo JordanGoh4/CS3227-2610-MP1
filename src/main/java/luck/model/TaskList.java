@@ -1,5 +1,8 @@
+package luck.model;
+
 import java.util.ArrayList;
 import java.util.List;
+import luck.exception.LuckException;
 
 public class TaskList {
     private final List<Task> tasks;
