@@ -48,7 +48,12 @@ jar {
 }
 
 shadowJar {
-    archiveFileName = 'duke.jar'
+    archiveFileName = 'luck.jar'
+    manifest {
+        attributes(
+                'Main-Class': 'luck.Luck'
+        )
+    }
 }
 
 run {

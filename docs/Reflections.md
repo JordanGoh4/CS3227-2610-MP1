@@ -25,3 +25,10 @@ This document reflects on using AI (LLMs) to assist in software engineering task
 - Precise prompts yield conservative, safe code changes.
 - Always verify AI-generated output; small mistakes can creep in with assumptions about environment or tooling.
 - Use AI to draft documentation and boilerplate; humans should review for accuracy.
+
+## Test Coverage Target
+
+JUnit tests focus on approximately the top 50% of the highest-value methods, prioritising
+core task-list operations, command validation, parsing, and persistence behavior. Tests
+should be reviewed and updated after every code change so that they continue to reflect
+Luck's current package structure and behavior.

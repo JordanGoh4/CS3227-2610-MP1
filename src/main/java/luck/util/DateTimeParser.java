@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class DateTimeParser {
     private static final List<DateTimeFormatter> INPUT_FORMATTERS = Arrays.asList(
@@ -22,7 +23,7 @@ public class DateTimeParser {
 
     private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter.ofPattern("MMM dd yyyy");
     private static final DateTimeFormatter DISPLAY_WITH_TIME_FORMATTER =
-            DateTimeFormatter.ofPattern("MMM dd yyyy, h:mm a");
+            DateTimeFormatter.ofPattern("MMM dd yyyy, h:mm a", Locale.ENGLISH);
 
     public static LocalDateTime parse(String value) {
         if (value == null || value.trim().isEmpty()) {
