@@ -57,3 +57,10 @@ JUnit tests focus on approximately the top 50% of the highest-value methods, pri
 core task-list operations, command validation, parsing, and persistence behavior. Tests
 should be reviewed and updated after every code change so that they continue to reflect
 Luck's current package structure and behavior.
+
+## Additional travel-feature testing
+
+Tests were expanded for trip validation, multiple-trip persistence, and invalid
+currency input. Network-dependent API calls are excluded from unit tests because
+external services can be unavailable or return changing data; those integrations
+are verified manually and handled with user-friendly errors.

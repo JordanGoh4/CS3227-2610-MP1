@@ -55,6 +55,12 @@ Deadline dates must use a supported numeric format such as `25/08/2026`,
 `25/08/2026 1430`, or `25/08/2026 14:30`. Invalid commands are rejected
 without changing the task list.
 
+## Managing trips
+
+Use the Trip Info tab to create and select multiple trips. Each trip stores a
+name, destination, dates, home currency, and notes. Select `New trip`, enter
+the details, and choose `Save trip details`.
+
 ## Saving tasks
 
 Luck automatically saves tasks to `data/luck.txt` after task changes and

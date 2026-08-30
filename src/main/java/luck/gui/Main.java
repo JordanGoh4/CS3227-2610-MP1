@@ -6,9 +6,11 @@ import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
@@ -21,7 +23,9 @@ import luck.command.CommandHandler;
 import luck.exception.LuckException;
 import luck.model.Task;
 import luck.model.TaskList;
+import luck.model.TripInfo;
 import luck.storage.TaskStorage;
+import luck.storage.TripInfoStorage;
 
 /** Displays Luck's travel-planning dashboard and chat interface. */
 public class Main extends Application {
@@ -31,10 +35,14 @@ public class Main extends Application {
     private final TextField chatInput = new TextField();
     private final Label statusLabel = new Label("Ready to plan your next trip.");
     private final Label weatherResult = new Label("No weather request yet.");
+    private final Label tripSummary = new Label();
     private TabPane tabs;
     private Tab weatherTab;
     private CommandHandler commandHandler;
     private TaskStorage storage;
+    private TripInfoStorage tripInfoStorage;
+    private final java.util.List<TripInfo> trips = new java.util.ArrayList<>();
+    private String activeCommand = "";
 
     /** Creates and displays the travel planner window. */
     @Override
@@ -50,6 +58,8 @@ public class Main extends Application {
     /** Loads stored tasks and prepares the command handler. */
     private void initialiseApplication() {
         storage = new TaskStorage(Path.of("data", "luck.txt"));
+        tripInfoStorage = new TripInfoStorage(Path.of("data", "trip-info.properties"));
+        trips.addAll(tripInfoStorage.loadAll());
         storage.ensureFileExists();
         for (Task task : storage.loadTasks()) {
             try {
@@ -61,7 +71,9 @@ public class Main extends Application {
         commandHandler = new CommandHandler(new CommandContext(taskList, storage,
                 new GuiConsoleUI(message -> {
                     addChatMessage("Luck", message);
-                    weatherResult.setText(message);
+                    if (activeCommand.startsWith("weather ")) {
+                        weatherResult.setText(message);
+                    }
                 })));
     }
 
@@ -104,9 +116,83 @@ public class Main extends Application {
     /** Creates the initial trip-information panel for future travel features. */
     private VBox createTripInfoPanel() {
         Label heading = new Label("Trip information");
-        Label description = new Label("Your destination and travel dates will appear here.");
-        Label note = new Label("This section is ready for future flight, hotel, and map features.");
-        return new VBox(12, heading, description, note);
+        ComboBox<String> tripSelector = new ComboBox<>();
+        tripSelector.setPromptText("Select a trip");
+        trips.forEach(trip -> tripSelector.getItems().add(trip.name()));
+        TextField destination = new TextField();
+        destination.setPromptText("Destination");
+        TextField startDate = new TextField();
+        startDate.setPromptText("Start date");
+        TextField endDate = new TextField();
+        endDate.setPromptText("End date");
+        TextField currency = new TextField();
+        currency.setPromptText("Home currency (e.g. SGD)");
+        TextArea notes = new TextArea();
+        notes.setPromptText("Travel notes");
+        notes.setPrefRowCount(5);
+        Button saveButton = new Button("Save trip details");
+        Button newTripButton = new Button("New trip");
+        saveButton.setOnAction(event -> saveTripInfo(tripSelector, destination, startDate, endDate, currency, notes));
+        newTripButton.setOnAction(event -> clearTripFields(tripSelector, destination, startDate, endDate, currency, notes));
+        tripSelector.setOnAction(event -> loadSelectedTrip(tripSelector, destination, startDate, endDate, currency, notes));
+        if (!trips.isEmpty()) {
+            tripSelector.getSelectionModel().selectFirst();
+            loadSelectedTrip(tripSelector, destination, startDate, endDate, currency, notes);
+        }
+        return new VBox(10, heading, tripSelector, destination, startDate, endDate, currency, notes,
+                new HBox(8, newTripButton, saveButton), tripSummary);
+    }
+
+    /** Saves trip fields and updates the trip summary. */
+    private void saveTripInfo(ComboBox<String> tripSelector, TextField destination, TextField startDate, TextField endDate,
+                              TextField currency, TextArea notes) {
+        String name = tripSelector.getValue() == null ? "Trip " + (trips.size() + 1) : tripSelector.getValue();
+        TripInfo tripInfo = new TripInfo(name, destination.getText().trim(), startDate.getText().trim(),
+                endDate.getText().trim(), currency.getText().trim(), notes.getText().trim());
+        if (!tripInfo.isComplete()) {
+            statusLabel.setText("Destination, start date, and end date are required.");
+            return;
+        }
+        int index = tripSelector.getSelectionModel().getSelectedIndex();
+        if (index < 0) {
+            trips.add(tripInfo);
+            tripSelector.getItems().add(tripInfo.name());
+            tripSelector.getSelectionModel().selectLast();
+        } else {
+            trips.set(index, tripInfo);
+        }
+        tripInfoStorage.saveAll(trips);
+        updateTripSummary(tripInfo);
+        statusLabel.setText("Trip details saved.");
+    }
+
+    /** Loads the selected trip into the editable fields. */
+    private void loadSelectedTrip(ComboBox<String> selector, TextField destination, TextField startDate,
+                                  TextField endDate, TextField currency, TextArea notes) {
+        int index = selector.getSelectionModel().getSelectedIndex();
+        if (index < 0) return;
+        TripInfo trip = trips.get(index);
+        destination.setText(trip.destination());
+        startDate.setText(trip.startDate());
+        endDate.setText(trip.endDate());
+        currency.setText(trip.currency());
+        notes.setText(trip.notes());
+        updateTripSummary(trip);
+    }
+
+    /** Clears the fields ready for a new trip. */
+    private void clearTripFields(ComboBox<String> selector, TextField destination, TextField startDate,
+                                 TextField endDate, TextField currency, TextArea notes) {
+        selector.getSelectionModel().clearSelection();
+        destination.clear(); startDate.clear(); endDate.clear(); currency.clear(); notes.clear();
+        tripSummary.setText("Enter details for a new trip.");
+    }
+
+    /** Displays the currently saved trip details. */
+    private void updateTripSummary(TripInfo tripInfo) {
+        tripSummary.setText("Saved trip: " + tripInfo.destination() + " ("
+                + tripInfo.startDate() + " to " + tripInfo.endDate() + ")");
+        tripSummary.setWrapText(true);
     }
 
     /** Creates the itinerary dashboard with refresh and delete actions. */
@@ -141,6 +227,7 @@ public class Main extends Application {
         }
         addChatMessage("You", input);
         chatInput.clear();
+        activeCommand = input.toLowerCase();
         try {
             if (input.equalsIgnoreCase("list")) {
                 addChatMessage("Luck", "Your itinerary is already shown on the left.");
@@ -162,6 +249,8 @@ public class Main extends Application {
         } catch (LuckException exception) {
             addChatMessage("Luck", exception.getMessage());
             statusLabel.setText("I could not process that command.");
+        } finally {
+            activeCommand = "";
         }
     }
 

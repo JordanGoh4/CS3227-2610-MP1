@@ -74,3 +74,10 @@ user-friendly message.
 `CurrencyService`. The service validates the amount and ISO currency codes,
 retrieves the latest rate from Frankfurter, and converts network failures into
 user-friendly `LuckException` messages.
+
+## Trip information
+
+`TripInfo` is an immutable model for one trip. `TripInfoStorage` persists a
+numbered collection of trips in `data/trip-info.properties`, while preserving
+compatibility with the original single-trip format. Tests cover validation and
+round-trip persistence without relying on external APIs.

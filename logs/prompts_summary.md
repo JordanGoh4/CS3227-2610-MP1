@@ -59,6 +59,15 @@ It is intended to help future development sessions quickly understand the curren
 - Added `WeatherCommand` and registered it with `CommandHandler`.
 - Documented the command and API/network limitations.
 - Added `currency <amount> <FROM> to <TO>` using the keyless Frankfurter API.
+- Added persistent Trip Info fields for destination, dates, currency, and notes.
+- Kept currency responses in chat instead of the Weather tab.
+
+## Multi-trip planning
+
+- Upgraded Trip Info to support multiple saved trips with selectable details,
+  including destination, dates, currency, and notes.
+- Added JUnit coverage for trip validation, trip persistence, and invalid
+  currency input, and expanded project documentation accordingly.
 
 ## Relevant commits
 

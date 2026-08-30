@@ -13,6 +13,7 @@ import luck.exception.LuckException;
 import luck.model.TaskList;
 import luck.storage.TaskStorage;
 import luck.ui.ConsoleUI;
+import luck.service.CurrencyService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -119,5 +120,11 @@ class LuckStateValidationTest {
     @Test
     void byeCommand_executed_sessionEnds() throws Exception {
         assertFalse(handler.handle("bye"));
+    }
+
+    @Test
+    void currencyCommand_invalidFormat_isRejected() {
+        assertThrows(LuckException.class,
+                () -> new CurrencyService().convert("one hundred USD to JPY"));
     }
 }
