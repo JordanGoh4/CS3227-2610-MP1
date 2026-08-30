@@ -67,3 +67,10 @@ Commits and branch names follow `.codex/skills/seedu-git-standard/SKILL.md`.
 coordinates, then queries the forecast endpoint for current conditions. Network
 errors are converted into `LuckException` so the command and GUI can display a
 user-friendly message.
+
+## Currency service
+
+`CurrencyCommand` delegates parsing and exchange-rate retrieval to
+`CurrencyService`. The service validates the amount and ISO currency codes,
+retrieves the latest rate from Frankfurter, and converts network failures into
+user-friendly `LuckException` messages.

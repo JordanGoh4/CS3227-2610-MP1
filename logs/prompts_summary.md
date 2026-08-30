@@ -58,6 +58,7 @@ It is intended to help future development sessions quickly understand the curren
 - Added `WeatherService` using Open-Meteo geocoding and forecast APIs.
 - Added `WeatherCommand` and registered it with `CommandHandler`.
 - Documented the command and API/network limitations.
+- Added `currency <amount> <FROM> to <TO>` using the keyless Frankfurter API.
 
 ## Relevant commits
 

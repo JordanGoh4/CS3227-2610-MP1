@@ -87,3 +87,13 @@ To see a five-day forecast, add `forecast` after the destination:
 ```text
 weather Tokyo forecast
 ```
+
+## Currency conversion
+
+Use the latest available exchange rate with:
+
+```text
+currency 100 USD to JPY
+```
+
+This feature requires an internet connection and uses the keyless Frankfurter API.

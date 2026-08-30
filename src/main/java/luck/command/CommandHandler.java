@@ -12,6 +12,7 @@ public class CommandHandler {
         commands.put("list", new ListCommand(context));
         commands.put("find", new FindCommand(context));
         commands.put("weather", new WeatherCommand(context));
+        commands.put("currency", new CurrencyCommand(context));
         commands.put("mark", new MarkCommand(context));
         commands.put("unmark", new UnmarkCommand(context));
         commands.put("delete", new DeleteCommand(context));
