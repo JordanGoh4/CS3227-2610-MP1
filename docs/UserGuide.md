@@ -70,3 +70,20 @@ gradle test
 
 The tests cover command validation, task-list operations, parsing, date/time
 handling, persistence, and task searching.
+## Travel weather
+
+Use `weather <destination>` to retrieve the current weather for a destination.
+For example:
+
+```text
+weather Tokyo
+```
+
+This feature requires an internet connection and uses Open-Meteo's geocoding and
+weather forecast APIs. If the service is unavailable, Luck displays an error.
+
+To see a five-day forecast, add `forecast` after the destination:
+
+```text
+weather Tokyo forecast
+```

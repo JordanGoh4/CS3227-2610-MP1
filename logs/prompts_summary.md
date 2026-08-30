@@ -41,8 +41,23 @@ It is intended to help future development sessions quickly understand the curren
 - Added refresh and delete actions for itinerary items.
 - The current GUI provides a foundation for future travel APIs such as weather, flights, hotels,
   and maps.
+- GUI command output is routed into the chat panel, and `bye` closes the GUI window.
+- The GUI explains that `list` is unnecessary because the itinerary is always visible on the left.
+- Organised the GUI into Chat, Itinerary, Weather, and Trip Info tabs; Weather and Trip Info
+  currently contain placeholders for later feature work.
+- Kept the chat interface permanently on the right while the travel tabs remain on the left.
+- Weather commands now select the Weather tab automatically and show the latest result there.
+- Task-related commands now select the Itinerary tab, and the chat input expands to the panel width.
 - Visual GUI testing is pending because computer-use support is not available in the current
   Codex session.
+
+## Travel feature development
+
+- Added the first travel-specific feature: `weather <destination>`.
+- Extended the weather command with `weather <destination> forecast` for five-day forecasts.
+- Added `WeatherService` using Open-Meteo geocoding and forecast APIs.
+- Added `WeatherCommand` and registered it with `CommandHandler`.
+- Documented the command and API/network limitations.
 
 ## Relevant commits
 

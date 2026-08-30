@@ -9,8 +9,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import luck.command.CommandContext;
@@ -19,7 +22,6 @@ import luck.exception.LuckException;
 import luck.model.Task;
 import luck.model.TaskList;
 import luck.storage.TaskStorage;
-import luck.ui.ConsoleUI;
 
 /** Displays Luck's travel-planning dashboard and chat interface. */
 public class Main extends Application {
@@ -28,6 +30,9 @@ public class Main extends Application {
     private final ListView<String> chatView = new ListView<>();
     private final TextField chatInput = new TextField();
     private final Label statusLabel = new Label("Ready to plan your next trip.");
+    private final Label weatherResult = new Label("No weather request yet.");
+    private TabPane tabs;
+    private Tab weatherTab;
     private CommandHandler commandHandler;
     private TaskStorage storage;
 
@@ -43,16 +48,27 @@ public class Main extends Application {
                 statusLabel.setText(exception.getMessage());
             }
         }
-        commandHandler = new CommandHandler(new CommandContext(taskList, storage, new ConsoleUI()));
+        commandHandler = new CommandHandler(new CommandContext(taskList, storage,
+                new GuiConsoleUI(message -> {
+                    addChatMessage("Luck", message);
+                    weatherResult.setText(message);
+                })));
 
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(18));
         root.setTop(new VBox(4, new Label("Luck Travel Planner"),
                 new Label("Plan destinations, organise your itinerary, and chat with Luck.")));
-        root.setLeft(createItineraryPanel());
-        root.setCenter(createChatPanel());
+        tabs = new TabPane();
+        tabs.getTabs().add(createTab("Itinerary", createItineraryPanel()));
+        weatherTab = createTab("Weather", createWeatherPanel());
+        tabs.getTabs().add(weatherTab);
+        tabs.getTabs().add(createTab("Trip Info", createTripInfoPanel()));
+        tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        HBox mainContent = new HBox(12, tabs, createChatPanel());
+        HBox.setHgrow(tabs, javafx.scene.layout.Priority.ALWAYS);
+        HBox.setHgrow(mainContent.getChildren().get(1), javafx.scene.layout.Priority.ALWAYS);
+        root.setCenter(mainContent);
         root.setBottom(statusLabel);
-        BorderPane.setMargin(root.getCenter(), new Insets(0, 0, 0, 18));
         BorderPane.setMargin(statusLabel, new Insets(14, 0, 0, 0));
 
         stage.setScene(new Scene(root, 980, 620));
@@ -60,6 +76,29 @@ public class Main extends Application {
         stage.show();
         refreshItinerary();
         addChatMessage("Luck", "Welcome! Tell me what you want to plan for your trip.");
+    }
+
+    /** Creates a non-closable tab with the supplied content. */
+    private Tab createTab(String title, VBox content) {
+        Tab tab = new Tab(title, content);
+        return tab;
+    }
+
+    /** Creates the initial weather placeholder for the travel planner. */
+    private VBox createWeatherPanel() {
+        Label heading = new Label("Weather");
+        Label description = new Label("Latest weather result:");
+        Label example = new Label("Try it in Chat: weather Tokyo");
+        weatherResult.setWrapText(true);
+        return new VBox(12, heading, description, weatherResult, example);
+    }
+
+    /** Creates the initial trip-information panel for future travel features. */
+    private VBox createTripInfoPanel() {
+        Label heading = new Label("Trip information");
+        Label description = new Label("Your destination and travel dates will appear here.");
+        Label note = new Label("This section is ready for future flight, hotel, and map features.");
+        return new VBox(12, heading, description, note);
     }
 
     /** Creates the itinerary dashboard with refresh and delete actions. */
@@ -81,7 +120,9 @@ public class Main extends Application {
         chatInput.setOnAction(event -> sendChatMessage());
         Button sendButton = new Button("Send");
         sendButton.setOnAction(event -> sendChatMessage());
-        return new VBox(8, heading, chatView, new HBox(8, chatInput, sendButton));
+        HBox inputRow = new HBox(8, chatInput, sendButton);
+        HBox.setHgrow(chatInput, Priority.ALWAYS);
+        return new VBox(8, heading, chatView, inputRow);
     }
 
     /** Sends a chat command to the existing command handler. */
@@ -93,14 +134,35 @@ public class Main extends Application {
         addChatMessage("You", input);
         chatInput.clear();
         try {
-            commandHandler.handle(input);
-            addChatMessage("Luck", "Done — I updated your itinerary.");
+            if (input.equalsIgnoreCase("list")) {
+                addChatMessage("Luck", "Your itinerary is already shown on the left.");
+                return;
+            }
+            boolean sessionContinues = commandHandler.handle(input);
+            if (!sessionContinues) {
+                addChatMessage("Luck", "Goodbye! Safe travels.");
+                ((Stage) chatInput.getScene().getWindow()).close();
+                return;
+            }
+            if (input.toLowerCase().startsWith("weather ")) {
+                tabs.getSelectionModel().select(weatherTab);
+            } else if (isTaskCommand(input)) {
+                tabs.getSelectionModel().select(0);
+            }
             refreshItinerary();
             statusLabel.setText("Your itinerary is up to date.");
         } catch (LuckException exception) {
             addChatMessage("Luck", exception.getMessage());
             statusLabel.setText("I could not process that command.");
         }
+    }
+
+    /** Returns whether a command should display the itinerary tab. */
+    private boolean isTaskCommand(String input) {
+        String command = input.split("\\s+", 2)[0].toLowerCase();
+        return command.equals("todo") || command.equals("deadline") || command.equals("event")
+                || command.equals("list") || command.equals("find") || command.equals("delete")
+                || command.equals("mark") || command.equals("unmark");
     }
 
     /** Adds a speaker message to the chat history. */

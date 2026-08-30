@@ -60,3 +60,10 @@ java -jar build/libs/duke.jar
 
 Java code follows `.codex/skills/seedu-java-coding-standard/SKILL.md`.
 Commits and branch names follow `.codex/skills/seedu-git-standard/SKILL.md`.
+## Weather service
+
+`WeatherCommand` delegates destination lookup and weather retrieval to
+`WeatherService`. The service uses Open-Meteo's geocoding endpoint to obtain
+coordinates, then queries the forecast endpoint for current conditions. Network
+errors are converted into `LuckException` so the command and GUI can display a
+user-friendly message.
