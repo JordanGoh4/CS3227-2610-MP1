@@ -39,6 +39,16 @@ public class Main extends Application {
     /** Creates and displays the travel planner window. */
     @Override
     public void start(Stage stage) {
+        initialiseApplication();
+        stage.setScene(new Scene(createRoot(), 980, 620));
+        stage.setTitle("Luck Travel Planner");
+        stage.show();
+        refreshItinerary();
+        addChatMessage("Luck", "Welcome! Tell me what you want to plan for your trip.");
+    }
+
+    /** Loads stored tasks and prepares the command handler. */
+    private void initialiseApplication() {
         storage = new TaskStorage(Path.of("data", "luck.txt"));
         storage.ensureFileExists();
         for (Task task : storage.loadTasks()) {
@@ -53,7 +63,10 @@ public class Main extends Application {
                     addChatMessage("Luck", message);
                     weatherResult.setText(message);
                 })));
+    }
 
+    /** Builds the root layout containing the tabs and chat panel. */
+    private BorderPane createRoot() {
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(18));
         root.setTop(new VBox(4, new Label("Luck Travel Planner"),
@@ -70,12 +83,7 @@ public class Main extends Application {
         root.setCenter(mainContent);
         root.setBottom(statusLabel);
         BorderPane.setMargin(statusLabel, new Insets(14, 0, 0, 0));
-
-        stage.setScene(new Scene(root, 980, 620));
-        stage.setTitle("Luck Travel Planner");
-        stage.show();
-        refreshItinerary();
-        addChatMessage("Luck", "Welcome! Tell me what you want to plan for your trip.");
+        return root;
     }
 
     /** Creates a non-closable tab with the supplied content. */
