@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import luck.model.Task;
 import luck.model.TaskList;
+import luck.exception.LuckException;
 import luck.ui.ConsoleUI;
 
 /** Adapts command output for display in the JavaFX chat panel. */
@@ -45,7 +46,7 @@ public class GuiConsoleUI extends ConsoleUI {
         for (int i = 0; i < tasks.size(); i++) {
             try {
                 printMessage((i + 1) + ". " + tasks.get(i));
-            } catch (Exception exception) {
+            } catch (LuckException exception) {
                 printMessage("Unable to display that task.");
             }
         }
