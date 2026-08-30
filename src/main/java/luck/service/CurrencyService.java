@@ -13,12 +13,13 @@ import luck.exception.LuckException;
 
 /** Converts amounts between currencies using the latest available rate. */
 public class CurrencyService {
+    private static final String CONVERSION_PATTERN = "(?i)\\s*([0-9]+(?:\\.[0-9]+)?)\\s+([A-Z]{3})\\s+to\\s+([A-Z]{3})\\s*";
+    private static final String RATE_PATTERN = "\\\"rate\\\"\\s*:\\s*([0-9.]+)";
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     /** Converts an amount from one ISO currency code to another. */
     public String convert(String input) throws LuckException {
-        Matcher matcher = Pattern.compile("(?i)\\s*([0-9]+(?:\\.[0-9]+)?)\\s+([A-Z]{3})\\s+to\\s+([A-Z]{3})\\s*")
-                .matcher(input == null ? "" : input);
+        Matcher matcher = Pattern.compile(CONVERSION_PATTERN).matcher(input == null ? "" : input);
         if (!matcher.matches()) {
             throw new LuckException("Use: currency <amount> <FROM> to <TO>, e.g. currency 100 USD to JPY.");
         }
@@ -32,7 +33,7 @@ public class CurrencyService {
             if (response.statusCode() != 200) {
                 throw new LuckException("That currency pair is not available.");
             }
-            Matcher rateMatcher = Pattern.compile("\\\"rate\\\"\\s*:\\s*([0-9.]+)").matcher(response.body());
+            Matcher rateMatcher = Pattern.compile(RATE_PATTERN).matcher(response.body());
             if (!rateMatcher.find()) {
                 throw new LuckException("The currency response was incomplete.");
             }

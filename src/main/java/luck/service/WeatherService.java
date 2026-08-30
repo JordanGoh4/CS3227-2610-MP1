@@ -15,6 +15,9 @@ import luck.exception.LuckException;
 public class WeatherService {
     private static final String GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search";
     private static final String FORECAST_URL = "https://api.open-meteo.com/v1/forecast";
+    private static final String NUMBER_PATTERN = "\\\"%s\\\"\\s*:\\s*(-?\\d+(?:\\.\\d+)?)";
+    private static final String STRING_PATTERN = "\\\"%s\\\"\\s*:\\s*\\\"([^\\\"]+)\\\"";
+    private static final String ARRAY_PATTERN = "\\\"%s\\\"\\s*:\\s*\\[([^]]+)]";
     private final HttpClient httpClient;
 
     /** Creates a weather service using the default HTTP client. */
@@ -93,7 +96,7 @@ public class WeatherService {
 
     /** Extracts a numeric JSON field. */
     private double number(String json, String field) throws LuckException {
-        Matcher matcher = Pattern.compile("\\\"" + field + "\\\"\\s*:\\s*(-?\\d+(?:\\.\\d+)?)").matcher(json);
+        Matcher matcher = Pattern.compile(String.format(NUMBER_PATTERN, field)).matcher(json);
         if (!matcher.find()) {
             throw new LuckException("That destination could not be found.");
         }
@@ -102,7 +105,7 @@ public class WeatherService {
 
     /** Extracts a string JSON field. */
     private String string(String json, String field) throws LuckException {
-        Matcher matcher = Pattern.compile("\\\"" + field + "\\\"\\s*:\\s*\\\"([^\\\"]+)\\\"").matcher(json);
+        Matcher matcher = Pattern.compile(String.format(STRING_PATTERN, field)).matcher(json);
         if (!matcher.find()) {
             throw new LuckException("That destination could not be found.");
         }
@@ -111,7 +114,7 @@ public class WeatherService {
 
     /** Extracts values from a simple JSON array field. */
     private String[] values(String json, String field) throws LuckException {
-        Matcher matcher = Pattern.compile("\\\"" + field + "\\\"\\s*:\\s*\\[([^]]+)]").matcher(json);
+        Matcher matcher = Pattern.compile(String.format(ARRAY_PATTERN, field)).matcher(json);
         if (!matcher.find()) {
             throw new LuckException("The forecast response was incomplete.");
         }
