@@ -40,7 +40,9 @@ public class WeatherService {
                     + (int) number(weatherJson, "weather_code") + ", wind "
                     + number(weatherJson, "wind_speed_10m") + " km/h.";
         } catch (IOException | InterruptedException | IllegalArgumentException exception) {
-            Thread.currentThread().interrupt();
+            if (exception instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             throw new LuckException("Unable to retrieve weather right now.");
         }
     }
