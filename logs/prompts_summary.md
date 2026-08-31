@@ -70,9 +70,19 @@ It is intended to help future development sessions quickly understand the curren
   a background thread, with loading and error states.
 - Updated the User Guide to explain GUI tabs, multi-trip itineraries, automatic
   weather refreshes, currency conversion, and storage locations.
+- Restructured the User Guide around a concise, user-focused Features section
+  and quick-start workflow.
+- Split each chatbot command into its own User Guide subsection and documented
+  known setup, network, and storage limitations.
+- Restructured DeveloperGuide.md using the attached Developer Guide as a
+  structural reference while adapting all content to Luck's architecture.
+- Added Mermaid sequence diagrams for weather requests and trip itinerary
+  switching to the Developer Guide.
 - Added `src/main/resources/travel.png` as the high-definition JavaFX travel-planner background.
 - Added JUnit coverage for trip validation, trip persistence, and invalid
   currency input, and expanded project documentation accordingly.
+- Added a reflection on using structured documentation, sequence diagrams, and
+  separate User and Developer Guides to communicate the evolving design.
 
 ## Relevant commits
 

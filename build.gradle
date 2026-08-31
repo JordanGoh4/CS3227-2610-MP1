@@ -63,6 +63,7 @@ jar {
 }
 
 shadowJar {
+    destinationDirectory = file("$rootDir/release")
     archiveFileName = 'luck.jar'
     manifest {
         attributes(

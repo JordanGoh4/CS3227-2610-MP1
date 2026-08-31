@@ -90,3 +90,23 @@ These corrections showed that AI output must be checked against the intended
 user workflow, not only whether the code compiles. Clearer follow-up prompts
 and manual GUI review were necessary to reveal interaction and presentation
 problems that unit tests would not catch.
+
+## Documentation and design communication
+
+The Developer Guide was reorganised using the supplied Developer Guide as a
+structural reference. The reference helped identify useful sections such as
+architecture, components, implementation details, testing, and limitations.
+
+Mermaid sequence diagrams were added for the weather command and trip
+selection flow. These diagrams make interactions between the GUI, command
+handler, services, storage, and external APIs easier to understand than prose
+alone.
+
+The documentation required several revisions because the application changed
+from a simple task manager into a multi-trip travel planner. This reinforced
+the importance of updating documentation after architectural and feature
+changes rather than treating it as a final submission task.
+
+The User Guide and Developer Guide serve different audiences. The User Guide
+is intentionally concise and task-oriented, while the Developer Guide gives
+more detail about architecture, implementation, testing, and limitations.
