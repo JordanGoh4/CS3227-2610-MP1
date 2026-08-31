@@ -81,3 +81,9 @@ user-friendly `LuckException` messages.
 numbered collection of trips in `data/trip-info.properties`, while preserving
 compatibility with the original single-trip format. Tests cover validation and
 round-trip persistence without relying on external APIs.
+
+## GUI resources
+
+The JavaFX interface uses the travel illustration at
+`src/main/resources/travel.png`. It is loaded from the classpath so the image
+also works when the application is packaged into a JAR.

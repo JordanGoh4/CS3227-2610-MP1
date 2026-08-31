@@ -64,3 +64,29 @@ Tests were expanded for trip validation, multiple-trip persistence, and invalid
 currency input. Network-dependent API calls are excluded from unit tests because
 external services can be unavailable or return changing data; those integrations
 are verified manually and handled with user-friendly errors.
+
+## Corrections after follow-up prompts
+
+Some initial AI-generated changes did not fully match the intended design.
+The first travel GUI placed the itinerary and chat in a tab arrangement,
+although the desired workflow was to keep chat permanently on the right and
+the travel tabs on the left. Follow-up prompting led to a split layout and
+automatic selection of the Weather or Itinerary tab after commands.
+
+The first GUI command integration also allowed command output to appear in the
+terminal and did not close the window when `bye` was entered. This was corrected
+by adding a GUI-specific output adapter and handling the boolean result returned
+by `CommandHandler`.
+
+The first multi-trip implementation stored separate trip details but still
+used one shared itinerary. Further prompting identified this mismatch and led
+to trip-specific task storage and itinerary switching.
+
+The background image was initially too small and made text difficult to read.
+Follow-up changes generated a higher-definition resource and added translucent
+dark panels, light text, and improved panel sizing.
+
+These corrections showed that AI output must be checked against the intended
+user workflow, not only whether the code compiles. Clearer follow-up prompts
+and manual GUI review were necessary to reveal interaction and presentation
+problems that unit tests would not catch.

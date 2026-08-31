@@ -43,8 +43,8 @@ It is intended to help future development sessions quickly understand the curren
   and maps.
 - GUI command output is routed into the chat panel, and `bye` closes the GUI window.
 - The GUI explains that `list` is unnecessary because the itinerary is always visible on the left.
-- Organised the GUI into Chat, Itinerary, Weather, and Trip Info tabs; Weather and Trip Info
-  currently contain placeholders for later feature work.
+- Organised the GUI into Itinerary, Weather, and Trip Info tabs with chat kept
+  permanently on the right.
 - Kept the chat interface permanently on the right while the travel tabs remain on the left.
 - Weather commands now select the Weather tab automatically and show the latest result there.
 - Task-related commands now select the Itinerary tab, and the chat input expands to the panel width.
@@ -66,6 +66,11 @@ It is intended to help future development sessions quickly understand the curren
 
 - Upgraded Trip Info to support multiple saved trips with selectable details,
   including destination, dates, currency, and notes.
+- Selecting a trip now refreshes the Weather tab for that trip's destination in
+  a background thread, with loading and error states.
+- Updated the User Guide to explain GUI tabs, multi-trip itineraries, automatic
+  weather refreshes, currency conversion, and storage locations.
+- Added `src/main/resources/travel.png` as the high-definition JavaFX travel-planner background.
 - Added JUnit coverage for trip validation, trip persistence, and invalid
   currency input, and expanded project documentation accordingly.
 

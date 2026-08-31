@@ -61,10 +61,22 @@ Use the Trip Info tab to create and select multiple trips. Each trip stores a
 name, destination, dates, home currency, and notes. Select `New trip`, enter
 the details, and choose `Save trip details`.
 
+Each selected trip has its own itinerary. Selecting a different trip refreshes
+the Itinerary tab and shows only that trip's tasks. New tasks are saved under
+the currently selected trip.
+
+After selecting a trip, Luck automatically refreshes the Weather tab using its
+destination. Weather loading messages and API errors are shown in that tab.
+
+In the JavaFX GUI, the trip tabs remain on the left and the chat interface is
+always available on the right. Use the chat to run commands, and type `bye` to
+close the GUI.
+
 ## Saving tasks
 
-Luck automatically saves tasks to `data/luck.txt` after task changes and
-loads them when the application starts.
+Luck automatically saves console tasks to `data/luck.txt`. GUI trip details
+are stored in `data/trip-info.properties`, while each trip's itinerary is
+stored in `data/trips/`.
 
 ## Testing
 
