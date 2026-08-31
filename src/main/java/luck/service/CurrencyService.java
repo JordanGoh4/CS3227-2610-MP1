@@ -15,7 +15,17 @@ import luck.exception.LuckException;
 public class CurrencyService {
     private static final String CONVERSION_PATTERN = "(?i)\\s*([0-9]+(?:\\.[0-9]+)?)\\s+([A-Z]{3})\\s+to\\s+([A-Z]{3})\\s*";
     private static final String RATE_PATTERN = "\\\"rate\\\"\\s*:\\s*([0-9.]+)";
-    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final HttpClient httpClient;
+
+    /** Creates a currency service using the default HTTP client. */
+    public CurrencyService() {
+        this(HttpClient.newHttpClient());
+    }
+
+    /** Creates a currency service using the supplied HTTP client. */
+    CurrencyService(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
 
     /** Converts an amount from one ISO currency code to another. */
     public String convert(String input) throws LuckException {

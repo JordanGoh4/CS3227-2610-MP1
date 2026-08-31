@@ -83,6 +83,8 @@ It is intended to help future development sessions quickly understand the curren
   currency input, and expanded project documentation accordingly.
 - Added a reflection on using structured documentation, sequence diagrams, and
   separate User and Developer Guides to communicate the evolving design.
+- Strengthened Developer Guide acknowledgements with specific references for
+  SE-EDU, JavaFX, Open-Meteo, Frankfurter, Gradle, Shadow, and JUnit.
 
 ## Relevant commits
 

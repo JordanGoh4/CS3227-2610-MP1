@@ -3,7 +3,28 @@
 ## Acknowledgements
 
 Luck is based on the Duke-style task-manager project used in the SE-EDU
-teaching materials. The project uses JavaFX, Gradle, and JUnit 5.
+teaching materials. The original task-manager structure and basic task
+concepts were adapted and extended for this project; the travel-planner GUI,
+multi-trip support, weather feature, currency feature, and their integration
+are project-specific additions.
+
+The following external resources and libraries are used:
+
+- [SE-EDU Java conventions](https://se-education.org/guides/conventions/java/intermediate.html)
+  informed the Java coding style.
+- [JavaFX](https://openjfx.io/) provides the desktop GUI controls and layout.
+- [Open-Meteo](https://open-meteo.com/en/docs) provides geocoding and weather
+  forecast data through its public APIs.
+- [Frankfurter](https://frankfurter.dev/) provides exchange-rate data through
+  its public API.
+- [Gradle](https://gradle.org/) manages compilation, testing, and packaging;
+  the [Shadow plugin](https://gradleup.com/shadow/) creates the fat JAR.
+- [JUnit 5](https://junit.org/junit5/) provides the automated test framework.
+
+These resources are dependencies or references rather than copied project
+code. API responses are parsed by Luck's own service classes, and all
+application-specific commands, models, storage, and GUI behaviour were
+implemented for this project.
 
 ## Setting up and getting started
 

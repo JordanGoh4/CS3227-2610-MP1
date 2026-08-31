@@ -1,56 +1,85 @@
-# CS3227 Holiday Planner (scaffold)
+# Luck Holiday Planner
 
-Minimal instructions to build and run the project.
+Luck is a Java desktop travel planner that combines a task-management chatbot
+with trip-specific itineraries, weather information, currency conversion, and
+a JavaFX graphical interface.
 
-Prerequisites
-- Java JDK 17 installed and on your PATH.
+## Prerequisites
 
-Build with Gradle wrapper (recommended):
+- JDK 25
+- Gradle 9.2 or newer, unless using the included Gradle wrapper
+- An internet connection for weather and currency features
+
+The project keeps all Java source code under `src/main/java`, which is the
+Gradle source root.
+
+## Set up the project
+
+Open the project folder in IntelliJ IDEA or VS Code and configure the project
+SDK to JDK 25. The Gradle wrapper is included, so Gradle does not need to be
+installed separately.
+
+## Build and test
 
 Windows PowerShell:
+
 ```powershell
 .\gradlew build
 .\gradlew test
 ```
 
-Unix/macOS:
+Linux or macOS:
+
 ```bash
 ./gradlew build
 ./gradlew test
 ```
 
-Notes:
-- The Gradle build config includes JavaFX settings. The application `mainClass` is not set yet — the UI/Launcher will be added later.
-- You can compile and run single Java files directly using `javac` / `java` for quick checks. Example (from project root):
+## Run Luck
 
-```bash
-javac -d out src/main/java/Luck.java
-java -cp out Luck
+To launch the JavaFX travel-planner GUI:
+
+```powershell
+.\gradlew run
 ```
 
-If you want me to add a Gradle `application.mainClass` and a runnable JavaFX launcher now, tell me and I'll scaffold it.
-# Luck project template
+On Linux or macOS, use `./gradlew run`.
 
-This is a project template for a greenfield Java project. Given below are instructions on how to use it.
+The configured GUI entry point is `luck.gui.Launcher`. The console entry point
+is `luck.Luck`.
 
-## Setting up in Intellij
+## Create and run the fat JAR
 
-Prerequisites: JDK 25, update Intellij to the most recent version.
+Generate the packaged application with:
 
-1. Open Intellij (if you are not in the welcome screen, click `File` > `Close Project` to close the existing project first)
-1. Open the project into Intellij as follows:
-   1. Click `Open`.
-   1. Select the project directory, and click `OK`.
-   1. If there are any further prompts, accept the defaults.
-1. Configure the project to use **JDK 25** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
-   In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/Luck.java` file, right-click it, and choose `Run Luck.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see something like the below as the output:
-   ```
-    ____        _        
-   |  _ \ _   _| | _____ 
-   | | | | | | | |/ / _ \
-   | |_| | |_| |   <  __/
-   |____/ \__,_|_|\_\___|
-   ```
+```powershell
+.\gradlew shadowJar
+```
 
-**Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+The output is written to `release/luck.jar`. Run it with:
+
+```powershell
+java -jar release\luck.jar
+```
+
+## Documentation
+
+- [User Guide](docs/UserGuide.md) — setup, features, commands, and testing
+- [Developer Guide](docs/DeveloperGuide.md) — architecture and development
+- [Reflections](docs/Reflections.md) — AI-assisted software engineering
+- [Development Logs](logs/prompts_summary.md) — consolidated project summaries
+
+## Project structure
+
+```text
+src/main/java/luck/     Application source code
+src/test/java/          JUnit tests
+src/main/resources/     Bundled resources such as the GUI background
+data/                   Persisted tasks, trips, and itineraries
+docs/                   User, developer, and reflection documents
+logs/                   Consolidated development summaries
+release/                Latest packaged JAR
+```
+
+For detailed setup instructions and known limitations, refer to the User
+Guide.

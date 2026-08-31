@@ -22,7 +22,12 @@ public class WeatherService {
 
     /** Creates a weather service using the default HTTP client. */
     public WeatherService() {
-        httpClient = HttpClient.newHttpClient();
+        this(HttpClient.newHttpClient());
+    }
+
+    /** Creates a weather service using the supplied HTTP client. */
+    WeatherService(HttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
     /** Looks up a destination and returns its current weather summary. */
