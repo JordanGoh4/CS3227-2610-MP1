@@ -3,8 +3,6 @@ package luck.gui;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -34,11 +32,9 @@ import luck.service.WeatherService;
 /** Displays Luck's travel-planning dashboard and chat interface. */
 public class Main extends Application {
     private final TaskList taskList = new TaskList();
-    private final ListView<String> itineraryView = new ListView<>();
     private final ListView<String> chatView = new ListView<>();
     private final TextField chatInput = new TextField();
     private final Label statusLabel = new Label();
-    private final Label weatherResult = new Label("No weather request yet.");
     private final Label tripSummary = new Label();
     private TabPane tabs;
     private Tab weatherTab;
@@ -47,6 +43,8 @@ public class Main extends Application {
     private TaskStorage storage;
     private TripInfoStorage tripInfoStorage;
     private final WeatherService weatherService = new WeatherService();
+    private WeatherPanel weatherPanel;
+    private ItineraryPanel itineraryPanel;
     private final java.util.List<TripInfo> trips = new java.util.ArrayList<>();
     private String activeCommand = "";
 
@@ -78,7 +76,7 @@ public class Main extends Application {
                 new GuiConsoleUI(message -> {
                     addChatMessage("Luck", message);
                     if (activeCommand.startsWith("weather ")) {
-                        weatherResult.setText(message);
+                        weatherPanel.setResult(message);
                     }
                 }));
         commandHandler = new CommandHandler(commandContext);
@@ -94,8 +92,10 @@ public class Main extends Application {
                 new Label("Plan destinations, organise your itinerary, and chat with Luck."));
         root.setTop(GuiStyles.stylePanel(titlePanel));
         tabs = new TabPane();
-        tabs.getTabs().add(createTab("Itinerary", createItineraryPanel()));
-        weatherTab = createTab("Weather", createWeatherPanel());
+        itineraryPanel = new ItineraryPanel(this::deleteSelectedTask);
+        tabs.getTabs().add(createTab("Itinerary", itineraryPanel));
+        weatherPanel = new WeatherPanel(weatherService);
+        weatherTab = createTab("Weather", weatherPanel);
         tabs.getTabs().add(weatherTab);
         tabs.getTabs().add(createTab("Trip Info", createTripInfoPanel()));
         tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
@@ -118,15 +118,6 @@ public class Main extends Application {
     private Tab createTab(String title, VBox content) {
         Tab tab = new Tab(title, content);
         return tab;
-    }
-
-    /** Creates the initial weather placeholder for the travel planner. */
-    private VBox createWeatherPanel() {
-        Label heading = new Label("Weather");
-        Label description = new Label("Latest weather result:");
-        Label example = new Label("Try it in Chat: weather Tokyo");
-        weatherResult.setWrapText(true);
-        return GuiStyles.stylePanel(new VBox(12, heading, description, weatherResult, example));
     }
 
     /** Creates the initial trip-information panel for future travel features. */
@@ -254,26 +245,7 @@ public class Main extends Application {
         }
         commandContext.setStorage(tripStorage);
         refreshItinerary();
-        refreshWeather(trip.destination());
-    }
-
-    /** Refreshes the Weather tab for the selected trip destination. */
-    private void refreshWeather(String destination) {
-        if (destination.isBlank()) {
-            weatherResult.setText("Add a destination to view its weather.");
-            return;
-        }
-        weatherResult.setText("Loading weather for " + destination + "...");
-        Thread weatherThread = new Thread(() -> {
-            try {
-                String result = weatherService.getCurrentWeather(destination);
-                Platform.runLater(() -> weatherResult.setText(result));
-            } catch (LuckException exception) {
-                Platform.runLater(() -> weatherResult.setText(exception.getMessage()));
-            }
-        });
-        weatherThread.setDaemon(true);
-        weatherThread.start();
+        weatherPanel.refresh(trip.destination());
     }
 
     /** Produces a safe file name for a trip. */
@@ -296,16 +268,6 @@ public class Main extends Application {
         tripSummary.setText("Saved trip: " + tripInfo.destination() + " ("
                 + tripInfo.startDate() + " to " + tripInfo.endDate() + ")");
         tripSummary.setWrapText(true);
-    }
-
-    /** Creates the itinerary dashboard with automatic updates and deletion. */
-    private VBox createItineraryPanel() {
-        Label heading = new Label("My itinerary");
-        Button deleteButton = new Button("Delete selected");
-        deleteButton.setOnAction(event -> deleteSelectedTask());
-        itineraryView.setStyle("-fx-control-inner-background: rgba(0, 20, 35, 0.92);"
-                + "-fx-text-background-color: white;");
-        return GuiStyles.stylePanel(new VBox(8, heading, itineraryView, deleteButton));
     }
 
     /** Creates the chat history, input box, and send button. */
@@ -384,13 +346,12 @@ public class Main extends Application {
 
     /** Refreshes the itinerary from the task model. */
     private void refreshItinerary() {
-        itineraryView.setItems(FXCollections.observableArrayList(
-                taskList.getAll().stream().map(Task::toString).toList()));
+        itineraryPanel.refresh(taskList);
     }
 
     /** Deletes the selected itinerary task and saves the updated list. */
     private void deleteSelectedTask() {
-        int selectedIndex = itineraryView.getSelectionModel().getSelectedIndex();
+        int selectedIndex = itineraryPanel.getSelectedIndex();
         if (selectedIndex < 0) {
             statusLabel.setText("Select an itinerary item to delete it.");
             return;
