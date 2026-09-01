@@ -243,7 +243,7 @@ the production code. The suite covers:
 - Currency input validation
 - Multiple-trip persistence and itinerary separation
 
-The suite currently contains 32 JUnit test cases focused on the highest-value
+The suite currently contains 37 JUnit test cases focused on the highest-value
 methods and workflows. GUI layout and live API availability require additional
 manual testing because they depend on the desktop environment and external
 services.
@@ -254,8 +254,11 @@ Run the tests with:
 .\gradlew.bat test
 ```
 
-External API calls are not used in unit tests because network responses are
-outside the test's control. Those integrations require manual testing.
+Live external API calls are avoided in unit tests because network services can
+be unavailable or change their responses. Instead, the weather tests use fake
+HTTP responses to verify parsing, validation, and error handling
+deterministically. Currency conversion uses the same testable service design;
+live API availability still requires manual testing.
 
 ## Build and packaging
 

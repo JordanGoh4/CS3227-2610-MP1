@@ -83,7 +83,7 @@ Each test case includes:
   ```
 
 ### Test Case 4: Save tasks to disk on happy path
-- Aim: Confirm that the task list is written to `data/duke.txt` after valid task changes.
+- Aim: Confirm that the task list is written to `data/luck.txt` after valid task changes.
 - Inputs:
   - `todo read book`
   - `deadline return book /by Sunday`
