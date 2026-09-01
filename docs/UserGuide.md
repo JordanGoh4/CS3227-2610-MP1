@@ -42,6 +42,11 @@ Selecting a different trip loads its own itinerary. New tasks are added to the
 currently selected trip. The Weather tab also refreshes for the selected trip's
 destination.
 
+Destinations are checked using a geocoding service. Enter a recognised country
+or a specific city and country, such as `Japan` or `Tokyo, Japan`. Occasionally
+a place name may also match a small locality, so specific city-and-country
+names are recommended.
+
 ## Commands
 
 ### Add a todo: `todo`
@@ -176,6 +181,26 @@ Example:
 currency 100 USD to JPY
 ```
 
+Common currency codes include:
+
+| Currency | Code |
+| --- | --- |
+| Singapore dollar | `SGD` |
+| Japanese yen | `JPY` |
+| US dollar | `USD` |
+| Euro | `EUR` |
+| British pound | `GBP` |
+| Australian dollar | `AUD` |
+| South Korean won | `KRW` |
+| Thai baht | `THB` |
+| Chinese yuan | `CNY` |
+| Malaysian ringgit | `MYR` |
+| Indonesian rupiah | `IDR` |
+| Hong Kong dollar | `HKD` |
+
+Use three-letter ISO currency codes. Conversion availability depends on the
+Frankfurter exchange-rate service.
+
 ### Exit Luck: `bye`
 
 Closes the GUI or ends the console session.
@@ -202,9 +227,14 @@ unavailable, Luck displays an error without closing the application.
 - The GUI requires JavaFX dependencies and JDK 25.
 - Gradle may be unable to delete the `build` folder while the GUI, VS Code,
   Java, or OneDrive is using compiled files. Stop those processes before using
-  `gradle clean`.
+  `gradle clean`. If the problem persists, close the application and rename
+  the project `build` folder to `build_old`; Gradle will create a fresh folder
+  during the next build.
 - Automatic currency suggestions currently cover a limited set of common
   destination countries; users can still enter a currency code manually.
+- The Shadow plugin may fail to resolve during a clean build or `shadowJar`
+  task even when `gradle run` works locally. Cached dependencies or existing
+  compiled files can hide this issue; verify packaging in a clean environment.
 
 ## Testing
 

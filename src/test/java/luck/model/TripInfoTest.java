@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class TripInfoTest {
     @Test
     void completeTripDetails_areAccepted() {
-        TripInfo trip = new TripInfo("Japan", "Tokyo", "10/09/2026", "15/09/2026", "JPY", "Food");
+        TripInfo trip = new TripInfo("Japan", "Tokyo", "10/09/2027", "15/09/2027", "JPY", "Food");
 
         assertTrue(trip.isComplete());
     }
@@ -19,5 +19,19 @@ class TripInfoTest {
         TripInfo trip = new TripInfo("Japan", "", "", "", "", "");
 
         assertFalse(trip.isComplete());
+    }
+
+    @Test
+    void reversedDateRange_isRejected() {
+        TripInfo trip = new TripInfo("Japan", "Tokyo", "15/09/2027", "10/09/2027", "JPY", "Food");
+
+        assertFalse(trip.hasValidDateRange());
+    }
+
+    @Test
+    void pastDateRange_isRejected() {
+        TripInfo trip = new TripInfo("Japan", "Tokyo", "10/09/2020", "15/09/2020", "JPY", "Food");
+
+        assertFalse(trip.hasValidDateRange());
     }
 }

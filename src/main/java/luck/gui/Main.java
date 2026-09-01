@@ -111,6 +111,10 @@ public class Main extends Application {
         HBox.setHgrow(tabs, Priority.SOMETIMES);
         HBox.setHgrow(chatPanel, Priority.ALWAYS);
         root.setCenter(mainContent);
+        statusLabel.setMaxWidth(Double.MAX_VALUE);
+        statusLabel.setStyle("-fx-background-color: rgba(0, 20, 35, 0.92);"
+                + "-fx-text-fill: white;"
+                + "-fx-padding: 8 12;");
         root.setBottom(statusLabel);
         BorderPane.setMargin(statusLabel, new Insets(14, 0, 0, 0));
         return root;
@@ -203,6 +207,16 @@ public class Main extends Application {
                 endDate.getText().trim(), currency.getText().trim(), notes.getText().trim());
         if (!tripInfo.isComplete()) {
             statusLabel.setText("Destination, start date, and end date are required.");
+            return;
+        }
+        if (!tripInfo.hasValidDateRange()) {
+            statusLabel.setText("Use valid future dates with the start date before the end date.");
+            return;
+        }
+        try {
+            weatherService.validateDestination(tripInfo.destination());
+        } catch (LuckException exception) {
+            statusLabel.setText(exception.getMessage());
             return;
         }
         int index = tripSelector.getSelectionModel().getSelectedIndex();
@@ -299,16 +313,14 @@ public class Main extends Application {
         tripSummary.setWrapText(true);
     }
 
-    /** Creates the itinerary dashboard with refresh and delete actions. */
+    /** Creates the itinerary dashboard with automatic updates and deletion. */
     private VBox createItineraryPanel() {
         Label heading = new Label("My itinerary");
-        Button refreshButton = new Button("Refresh");
-        refreshButton.setOnAction(event -> refreshItinerary());
         Button deleteButton = new Button("Delete selected");
         deleteButton.setOnAction(event -> deleteSelectedTask());
         itineraryView.setStyle("-fx-control-inner-background: rgba(0, 20, 35, 0.92);"
                 + "-fx-text-background-color: white;");
-        return stylePanel(new VBox(8, heading, itineraryView, new HBox(8, refreshButton, deleteButton)));
+        return stylePanel(new VBox(8, heading, itineraryView, deleteButton));
     }
 
     /** Creates the chat history, input box, and send button. */

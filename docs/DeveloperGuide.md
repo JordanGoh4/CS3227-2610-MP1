@@ -42,23 +42,6 @@ The console entry point is `luck.Luck`. The JavaFX desktop entry point is
 
 ### Architecture
 
-```text
-User
-  |
-  v
-ConsoleUI or JavaFX GUI
-  |
-  v
-CommandHandler ---> Command objects
-  |                       |
-  v                       v
-TaskList and TripInfo   WeatherService / CurrencyService
-  |                       |
-  v                       v
-TaskStorage          External APIs
-TripInfoStorage
-```
-
 The following UML class diagram shows the main architectural relationships
 between the application's layers:
 
@@ -302,3 +285,7 @@ and clear separation between UI, commands, model, storage, and services.
 - JavaFX visual behavior requires manual testing on a desktop environment.
 - Gradle may be unable to delete `build` when Java, VS Code, or OneDrive holds
   compiled files open.
+- The Shadow plugin may fail to resolve during a clean build or `shadowJar`
+  task even when `gradle run` works locally. Cached dependencies or existing
+  compiled files can hide this issue, so packaging should be verified in a
+  clean environment before release.

@@ -20,6 +20,13 @@ class WeatherServiceTest {
     }
 
     @Test
+    void emptyGeocodingResult_isRejected() {
+        WeatherService service = new WeatherService(new FakeHttpClient("{\"results\":[]}"));
+
+        assertThrows(LuckException.class, () -> service.validateDestination("Atlantis"));
+    }
+
+    @Test
     void currentWeatherResponse_isParsed() throws Exception {
         FakeHttpClient client = new FakeHttpClient(
                 "{\"results\":[{\"latitude\":1.3,\"longitude\":103.8,\"name\":\"Singapore\"}]}",

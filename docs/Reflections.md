@@ -110,3 +110,15 @@ changes rather than treating it as a final submission task.
 The User Guide and Developer Guide serve different audiences. The User Guide
 is intentionally concise and task-oriented, while the Developer Guide gives
 more detail about architecture, implementation, testing, and limitations.
+
+## Build tooling issue despite successful execution
+
+A confusing issue occurred with the Shadow plugin. Gradle reported that the
+configured plugin version could not be found, but the application could still
+be run using the regular `run` task. This happened because running the
+application and creating a fat JAR are separate Gradle workflows, and existing
+cached dependencies or compiled outputs may still allow `run` to work.
+
+This taught me that a successful local run does not necessarily prove that the
+project can be built from scratch on another machine. Build configuration,
+dependency resolution, testing, and packaging must each be verified separately.

@@ -30,6 +30,25 @@ public class WeatherService {
         this.httpClient = httpClient;
     }
 
+    /** Checks whether the geocoding service recognises the destination. */
+    public void validateDestination(String destination) throws LuckException {
+        if (destination == null || destination.isBlank()) {
+            throw new LuckException("Please provide a valid destination.");
+        }
+        try {
+            String locationJson = get(GEOCODING_URL + "?name="
+                    + URLEncoder.encode(destination.trim(), StandardCharsets.UTF_8)
+                    + "&count=1&language=en&format=json");
+            number(locationJson, "latitude");
+            number(locationJson, "longitude");
+        } catch (IOException | InterruptedException | IllegalArgumentException exception) {
+            if (exception instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            throw new LuckException("That destination could not be found.");
+        }
+    }
+
     /** Looks up a destination and returns its current weather summary. */
     public String getCurrentWeather(String destination) throws LuckException {
         if (destination == null || destination.isBlank()) {
