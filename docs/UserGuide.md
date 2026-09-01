@@ -20,7 +20,7 @@ organise trips, manage itineraries, check weather, and convert currencies.
 Install JDK 25 and Gradle 9.2 or newer. From the project root, run:
 
 ```powershell
-gradle run
+.\gradlew.bat run
 ```
 
 The GUI keeps the travel tabs on the left and the chat interface on the right.
@@ -29,7 +29,7 @@ Type a command in the chat box and press Enter or select **Send**.
 To create a distributable JAR, run:
 
 ```powershell
-gradle shadowJar
+.\gradlew.bat shadowJar
 java -jar release/luck.jar
 ```
 
@@ -241,5 +241,5 @@ unavailable, Luck displays an error without closing the application.
 Run the automated tests with:
 
 ```powershell
-gradle test
+.\gradlew.bat test
 ```

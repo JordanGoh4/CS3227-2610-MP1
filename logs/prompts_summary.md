@@ -85,6 +85,12 @@ It is intended to help future development sessions quickly understand the curren
   separate User and Developer Guides to communicate the evolving design.
 - Strengthened Developer Guide acknowledgements with specific references for
   SE-EDU, JavaFX, Open-Meteo, Frankfurter, Gradle, Shadow, and JUnit.
+- Refactored the JavaFX GUI by extracting shared styles and the Weather,
+  Itinerary, Chat, and Trip Info panels from `Main.java`.
+- Removed the redundant itinerary Refresh button because the GUI refreshes
+  automatically after commands and trip changes.
+- Added validation for recognised destinations, future trip dates, and ordered
+  start/end dates, with tests for invalid destination and date scenarios.
 
 ## Relevant commits
 

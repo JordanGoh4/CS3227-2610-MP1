@@ -2,7 +2,6 @@ package luck.gui;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -22,12 +21,9 @@ public class TripInfoPanel extends VBox {
     private final TextField currency = new TextField();
     private final TextArea notes = new TextArea();
     private final Label tripSummary = new Label();
-    private final List<TripInfo> trips;
-
     /** Creates a trip-information panel using the supplied action callbacks. */
     public TripInfoPanel(List<TripInfo> trips, Runnable saveAction,
                          Runnable newTripAction, Runnable selectionAction) {
-        this.trips = trips;
         Label heading = new Label("Trip information");
         tripSelector.setPromptText("Select a trip");
         trips.forEach(trip -> tripSelector.getItems().add(trip.name()));

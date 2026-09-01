@@ -31,8 +31,8 @@ implemented for this project.
 Install JDK 25 and Gradle 9.2 or newer. From the project root, run:
 
 ```powershell
-gradle build
-gradle run
+.\gradlew.bat build
+.\gradlew.bat run
 ```
 
 The console entry point is `luck.Luck`. The JavaFX desktop entry point is
@@ -238,13 +238,20 @@ the production code. The suite covers:
 - Command validation and task operations
 - Task parsing and date/time parsing
 - Task and trip persistence
-- Trip validation
-- Invalid currency input
+- Trip validation, including past and reversed date ranges
+- Weather response parsing and unresolved destinations
+- Currency input validation
+- Multiple-trip persistence and itinerary separation
+
+The suite currently contains 32 JUnit test cases focused on the highest-value
+methods and workflows. GUI layout and live API availability require additional
+manual testing because they depend on the desktop environment and external
+services.
 
 Run the tests with:
 
 ```powershell
-gradle test
+.\gradlew.bat test
 ```
 
 External API calls are not used in unit tests because network responses are
@@ -255,7 +262,7 @@ outside the test's control. Those integrations require manual testing.
 The project targets Java 25. Create the fat JAR with:
 
 ```powershell
-gradle shadowJar
+.\gradlew.bat shadowJar
 ```
 
 The output is written to:
