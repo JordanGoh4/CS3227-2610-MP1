@@ -7,12 +7,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -95,10 +89,10 @@ public class Main extends Application {
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(18));
         root.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;");
-        applyTravelBackground(root);
+        GuiStyles.applyTravelBackground(root);
         VBox titlePanel = new VBox(4, new Label("Luck Travel Planner"),
                 new Label("Plan destinations, organise your itinerary, and chat with Luck."));
-        root.setTop(stylePanel(titlePanel));
+        root.setTop(GuiStyles.stylePanel(titlePanel));
         tabs = new TabPane();
         tabs.getTabs().add(createTab("Itinerary", createItineraryPanel()));
         weatherTab = createTab("Weather", createWeatherPanel());
@@ -120,15 +114,6 @@ public class Main extends Application {
         return root;
     }
 
-    /** Applies the bundled travel illustration as the application background. */
-    private void applyTravelBackground(BorderPane root) {
-        Image image = new Image(getClass().getResourceAsStream("/travel.png"));
-        BackgroundSize size = new BackgroundSize(100, 100, true, true, false, true);
-        BackgroundImage background = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, size);
-        root.setBackground(new Background(background));
-    }
-
     /** Creates a non-closable tab with the supplied content. */
     private Tab createTab(String title, VBox content) {
         Tab tab = new Tab(title, content);
@@ -141,7 +126,7 @@ public class Main extends Application {
         Label description = new Label("Latest weather result:");
         Label example = new Label("Try it in Chat: weather Tokyo");
         weatherResult.setWrapText(true);
-        return stylePanel(new VBox(12, heading, description, weatherResult, example));
+        return GuiStyles.stylePanel(new VBox(12, heading, description, weatherResult, example));
     }
 
     /** Creates the initial trip-information panel for future travel features. */
@@ -164,12 +149,12 @@ public class Main extends Application {
         TextArea notes = new TextArea();
         notes.setPromptText("Travel notes, e.g. vegetarian food and public transport");
         notes.setPrefRowCount(5);
-        styleInput(tripName);
-        styleInput(destination);
-        styleInput(startDate);
-        styleInput(endDate);
-        styleInput(currency);
-        styleInput(notes);
+        GuiStyles.styleInput(tripName);
+        GuiStyles.styleInput(destination);
+        GuiStyles.styleInput(startDate);
+        GuiStyles.styleInput(endDate);
+        GuiStyles.styleInput(currency);
+        GuiStyles.styleInput(notes);
         Button saveButton = new Button("Save trip details");
         Button newTripButton = new Button("New trip");
         saveButton.setOnAction(event -> saveTripInfo(tripSelector, tripName, destination, startDate, endDate, currency, notes));
@@ -179,7 +164,7 @@ public class Main extends Application {
             tripSelector.getSelectionModel().selectFirst();
             loadSelectedTrip(tripSelector, tripName, destination, startDate, endDate, currency, notes);
         }
-        return stylePanel(new VBox(10, heading, tripSelector, tripName, destination, startDate, endDate, currency, notes,
+        return GuiStyles.stylePanel(new VBox(10, heading, tripSelector, tripName, destination, startDate, endDate, currency, notes,
                 new HBox(8, newTripButton, saveButton), tripSummary));
     }
 
@@ -320,7 +305,7 @@ public class Main extends Application {
         deleteButton.setOnAction(event -> deleteSelectedTask());
         itineraryView.setStyle("-fx-control-inner-background: rgba(0, 20, 35, 0.92);"
                 + "-fx-text-background-color: white;");
-        return stylePanel(new VBox(8, heading, itineraryView, deleteButton));
+        return GuiStyles.stylePanel(new VBox(8, heading, itineraryView, deleteButton));
     }
 
     /** Creates the chat history, input box, and send button. */
@@ -339,31 +324,13 @@ public class Main extends Application {
         chatView.setStyle("-fx-control-inner-background: rgba(0, 20, 35, 0.92);"
                 + "-fx-text-background-color: white;");
         chatInput.setPromptText("Enter a command, e.g. weather Tokyo");
-        styleInput(chatInput);
+        GuiStyles.styleInput(chatInput);
         chatInput.setOnAction(event -> sendChatMessage());
         Button sendButton = new Button("Send");
         sendButton.setOnAction(event -> sendChatMessage());
         HBox inputRow = new HBox(8, chatInput, sendButton);
         HBox.setHgrow(chatInput, Priority.ALWAYS);
-        return stylePanel(new VBox(8, heading, chatView, inputRow));
-    }
-
-    /** Makes input text and placeholder text readable on the dark panels. */
-    private void styleInput(javafx.scene.control.Control input) {
-        input.setStyle("-fx-text-fill: white; -fx-prompt-text-fill: #d6e4ec;"
-                + " -fx-control-inner-background: rgba(0, 20, 35, 0.92);");
-    }
-
-    /** Applies high-contrast styling to a GUI content panel. */
-    private VBox stylePanel(VBox panel) {
-        panel.setPadding(new Insets(14));
-        panel.setStyle("-fx-background-color: rgba(0, 35, 55, 0.88);"
-                + "-fx-background-radius: 10; -fx-border-color: rgba(255,255,255,0.45);"
-                + "-fx-border-radius: 10;");
-        panel.getChildren().stream()
-                .filter(child -> child instanceof javafx.scene.control.Label)
-                .forEach(child -> child.setStyle("-fx-text-fill: white;"));
-        return panel;
+        return GuiStyles.stylePanel(new VBox(8, heading, chatView, inputRow));
     }
 
     /** Sends a chat command to the existing command handler. */
