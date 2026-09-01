@@ -5,13 +5,7 @@ import java.nio.file.Files;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
@@ -32,10 +26,7 @@ import luck.service.WeatherService;
 /** Displays Luck's travel-planning dashboard and chat interface. */
 public class Main extends Application {
     private final TaskList taskList = new TaskList();
-    private final ListView<String> chatView = new ListView<>();
-    private final TextField chatInput = new TextField();
     private final Label statusLabel = new Label();
-    private final Label tripSummary = new Label();
     private TabPane tabs;
     private Tab weatherTab;
     private CommandHandler commandHandler;
@@ -45,6 +36,8 @@ public class Main extends Application {
     private final WeatherService weatherService = new WeatherService();
     private WeatherPanel weatherPanel;
     private ItineraryPanel itineraryPanel;
+    private ChatPanel chatPanel;
+    private TripInfoPanel tripInfoPanel;
     private final java.util.List<TripInfo> trips = new java.util.ArrayList<>();
     private String activeCommand = "";
 
@@ -97,11 +90,13 @@ public class Main extends Application {
         weatherPanel = new WeatherPanel(weatherService);
         weatherTab = createTab("Weather", weatherPanel);
         tabs.getTabs().add(weatherTab);
-        tabs.getTabs().add(createTab("Trip Info", createTripInfoPanel()));
+        tripInfoPanel = new TripInfoPanel(trips, this::saveTripInfoFromPanel,
+                this::clearTripFieldsFromPanel, this::loadSelectedTripFromPanel);
+        tabs.getTabs().add(createTab("Trip Info", tripInfoPanel));
         tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        HBox mainContent = new HBox(12, tabs, createChatPanel());
+        chatPanel = new ChatPanel(this::processChatMessage);
+        HBox mainContent = new HBox(12, tabs, chatPanel);
         tabs.setPrefWidth(440);
-        VBox chatPanel = (VBox) mainContent.getChildren().get(1);
         HBox.setHgrow(tabs, Priority.SOMETIMES);
         HBox.setHgrow(chatPanel, Priority.ALWAYS);
         root.setCenter(mainContent);
@@ -120,67 +115,9 @@ public class Main extends Application {
         return tab;
     }
 
-    /** Creates the initial trip-information panel for future travel features. */
-    private VBox createTripInfoPanel() {
-        Label heading = new Label("Trip information");
-        ComboBox<String> tripSelector = new ComboBox<>();
-        tripSelector.setPromptText("Select a trip");
-        trips.forEach(trip -> tripSelector.getItems().add(trip.name()));
-        TextField tripName = new TextField();
-        tripName.setPromptText("Trip name, e.g. Japan Holiday 2026");
-        TextField destination = new TextField();
-        destination.setPromptText("Destination, e.g. Tokyo, Japan");
-        TextField startDate = new TextField();
-        startDate.setPromptText("Start date, e.g. 10/09/2026");
-        TextField endDate = new TextField();
-        endDate.setPromptText("End date, e.g. 15/09/2026");
-        TextField currency = new TextField();
-        currency.setPromptText("Home currency, e.g. SGD");
-        destination.setOnAction(event -> suggestCurrency(destination, currency));
-        TextArea notes = new TextArea();
-        notes.setPromptText("Travel notes, e.g. vegetarian food and public transport");
-        notes.setPrefRowCount(5);
-        GuiStyles.styleInput(tripName);
-        GuiStyles.styleInput(destination);
-        GuiStyles.styleInput(startDate);
-        GuiStyles.styleInput(endDate);
-        GuiStyles.styleInput(currency);
-        GuiStyles.styleInput(notes);
-        Button saveButton = new Button("Save trip details");
-        Button newTripButton = new Button("New trip");
-        saveButton.setOnAction(event -> saveTripInfo(tripSelector, tripName, destination, startDate, endDate, currency, notes));
-        newTripButton.setOnAction(event -> clearTripFields(tripSelector, tripName, destination, startDate, endDate, currency, notes));
-        tripSelector.setOnAction(event -> loadSelectedTrip(tripSelector, tripName, destination, startDate, endDate, currency, notes));
-        if (!trips.isEmpty()) {
-            tripSelector.getSelectionModel().selectFirst();
-            loadSelectedTrip(tripSelector, tripName, destination, startDate, endDate, currency, notes);
-        }
-        return GuiStyles.stylePanel(new VBox(10, heading, tripSelector, tripName, destination, startDate, endDate, currency, notes,
-                new HBox(8, newTripButton, saveButton), tripSummary));
-    }
-
-    /** Suggests common destination currencies when the user confirms a destination. */
-    private void suggestCurrency(TextField destination, TextField currency) {
-        String country = destination.getText().trim().toLowerCase();
-        java.util.Map<String, String> currencies = java.util.Map.of(
-                "japan", "JPY", "singapore", "SGD", "korea", "KRW", "south korea", "KRW",
-                "united states", "USD", "usa", "USD", "uk", "GBP", "united kingdom", "GBP",
-                "australia", "AUD", "thailand", "THB");
-        String suggestedCurrency = currencies.get(country);
-        if (suggestedCurrency != null) {
-            currency.setText(suggestedCurrency);
-        }
-    }
-
-    /** Saves trip fields and updates the trip summary. */
-    private void saveTripInfo(ComboBox<String> tripSelector, TextField tripName, TextField destination, TextField startDate, TextField endDate,
-                              TextField currency, TextArea notes) {
-        String name = tripName.getText().trim();
-        if (name.isEmpty()) {
-            name = tripSelector.getValue() == null ? "Trip " + (trips.size() + 1) : tripSelector.getValue();
-        }
-        TripInfo tripInfo = new TripInfo(name, destination.getText().trim(), startDate.getText().trim(),
-                endDate.getText().trim(), currency.getText().trim(), notes.getText().trim());
+    /** Saves the trip currently entered in the extracted trip-information panel. */
+    private void saveTripInfoFromPanel() {
+        TripInfo tripInfo = tripInfoPanel.getTripInfo(trips.size() + 1);
         if (!tripInfo.isComplete()) {
             statusLabel.setText("Destination, start date, and end date are required.");
             return;
@@ -195,34 +132,36 @@ public class Main extends Application {
             statusLabel.setText(exception.getMessage());
             return;
         }
-        int index = tripSelector.getSelectionModel().getSelectedIndex();
+        int index = tripInfoPanel.getSelectedIndex();
         if (index < 0) {
             trips.add(tripInfo);
-            tripSelector.getItems().add(tripInfo.name());
-            tripSelector.getSelectionModel().selectLast();
+            tripInfoPanel.addTrip(tripInfo);
             switchToTrip(tripInfo);
         } else {
             trips.set(index, tripInfo);
+            tripInfoPanel.updateSelectedTripName(tripInfo);
         }
         tripInfoStorage.saveAll(trips);
-        updateTripSummary(tripInfo);
+        tripInfoPanel.updateSummary(tripInfo);
         statusLabel.setText("Trip details saved.");
     }
 
-    /** Loads the selected trip into the editable fields. */
-    private void loadSelectedTrip(ComboBox<String> selector, TextField tripName, TextField destination, TextField startDate,
-                                  TextField endDate, TextField currency, TextArea notes) {
-        int index = selector.getSelectionModel().getSelectedIndex();
-        if (index < 0) return;
+    /** Clears the extracted trip-information panel for a new trip. */
+    private void clearTripFieldsFromPanel() {
+        taskList.clear();
+        refreshItinerary();
+        tripInfoPanel.clearForm();
+    }
+
+    /** Loads the trip selected in the extracted trip-information panel. */
+    private void loadSelectedTripFromPanel() {
+        int index = tripInfoPanel.getSelectedIndex();
+        if (index < 0) {
+            return;
+        }
         TripInfo trip = trips.get(index);
         switchToTrip(trip);
-        tripName.setText(trip.name());
-        destination.setText(trip.destination());
-        startDate.setText(trip.startDate());
-        endDate.setText(trip.endDate());
-        currency.setText(trip.currency());
-        notes.setText(trip.notes());
-        updateTripSummary(trip);
+        tripInfoPanel.showTrip(trip);
     }
 
     /** Switches the shared command context and itinerary to the selected trip. */
@@ -253,56 +192,13 @@ public class Main extends Application {
         return name.toLowerCase().replaceAll("[^a-z0-9]+", "-");
     }
 
-    /** Clears the fields ready for a new trip. */
-    private void clearTripFields(ComboBox<String> selector, TextField tripName, TextField destination, TextField startDate,
-                                 TextField endDate, TextField currency, TextArea notes) {
-        selector.getSelectionModel().clearSelection();
-        taskList.clear();
-        refreshItinerary();
-        tripName.clear(); destination.clear(); startDate.clear(); endDate.clear(); currency.clear(); notes.clear();
-        tripSummary.setText("Enter details for a new trip.");
-    }
-
-    /** Displays the currently saved trip details. */
-    private void updateTripSummary(TripInfo tripInfo) {
-        tripSummary.setText("Saved trip: " + tripInfo.destination() + " ("
-                + tripInfo.startDate() + " to " + tripInfo.endDate() + ")");
-        tripSummary.setWrapText(true);
-    }
-
-    /** Creates the chat history, input box, and send button. */
-    private VBox createChatPanel() {
-        Label heading = new Label("Chat with Luck");
-        chatView.setPrefHeight(470);
-        chatView.setCellFactory(view -> new ListCell<>() {
-            @Override
-            protected void updateItem(String message, boolean empty) {
-                super.updateItem(message, empty);
-                setText(empty ? null : message);
-                setWrapText(true);
-                setPrefHeight(USE_COMPUTED_SIZE);
-            }
-        });
-        chatView.setStyle("-fx-control-inner-background: rgba(0, 20, 35, 0.92);"
-                + "-fx-text-background-color: white;");
-        chatInput.setPromptText("Enter a command, e.g. weather Tokyo");
-        GuiStyles.styleInput(chatInput);
-        chatInput.setOnAction(event -> sendChatMessage());
-        Button sendButton = new Button("Send");
-        sendButton.setOnAction(event -> sendChatMessage());
-        HBox inputRow = new HBox(8, chatInput, sendButton);
-        HBox.setHgrow(chatInput, Priority.ALWAYS);
-        return GuiStyles.stylePanel(new VBox(8, heading, chatView, inputRow));
-    }
-
     /** Sends a chat command to the existing command handler. */
-    private void sendChatMessage() {
-        String input = chatInput.getText().trim();
+    private void processChatMessage(String input) {
         if (input.isEmpty()) {
             return;
         }
         addChatMessage("You", input);
-        chatInput.clear();
+        chatPanel.clearInput();
         activeCommand = input.toLowerCase();
         try {
             if (input.equalsIgnoreCase("list")) {
@@ -312,7 +208,7 @@ public class Main extends Application {
             boolean sessionContinues = commandHandler.handle(input);
             if (!sessionContinues) {
                 addChatMessage("Luck", "Goodbye! Safe travels.");
-                ((Stage) chatInput.getScene().getWindow()).close();
+                ((Stage) chatPanel.getScene().getWindow()).close();
                 return;
             }
             if (input.toLowerCase().startsWith("weather ")) {
@@ -340,8 +236,7 @@ public class Main extends Application {
 
     /** Adds a speaker message to the chat history. */
     private void addChatMessage(String speaker, String message) {
-        chatView.getItems().add(speaker + ": " + message);
-        chatView.scrollTo(chatView.getItems().size() - 1);
+        chatPanel.addMessage(speaker, message);
     }
 
     /** Refreshes the itinerary from the task model. */
